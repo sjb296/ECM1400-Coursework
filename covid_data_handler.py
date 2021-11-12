@@ -1,10 +1,20 @@
 from typing import List, Dict, Tuple
 from uk_covid19 import Cov19API
 import json
+import sched
+import time
 
 def parse_csv_data(csv_filename: str) -> List[str]:
 	"""
 	Return a list of strings each containing a row of the csv.
+
+	Parameters
+	----------
+	csv_filename: str - The name of the csv to read from.
+
+	Returns
+	----------
+	A list of strings where each string is a row of the csv.
 	"""
 	with open(csv_filename, "r") as csv:
 		return [i.strip("\n") for i in csv.readlines()]
@@ -13,7 +23,19 @@ def process_covid_csv_data(covid_csv_data: List[str]) -> Tuple[int]:
 	"""
 	Return the total COVID cases in the last 7 days, the current number of
 	hospital cases, and the total deaths, given a list of rows of a csv
-	in government format.
+	in specification format.
+
+	Parameters
+	----------
+	covid_csv_data: List[str] - A list of rows of a csv in specification
+	COVID data format.
+
+	Returns
+	----------
+	A tuple containing
+	 - The total number of infections in the last 7 days
+	 - The current hospital cases
+	 - The cumulative number of deaths
 	"""
 	header = covid_csv_data[0].split(",")
 	print(header)
@@ -116,15 +138,15 @@ def covid_API_request(location: str = "Exeter", \
 
 	# Get the number of hospital cases
 	if nat_body[0][3]:
-		hospital_cases = nat_body[0][3]
+		hospital_cases = int(nat_body[0][3])
 	else:
 		# Data for latest day incomplete
-		hospital_cases = nat_body[1][3]
+		hospital_cases = int(nat_body[1][3])
 
 	# Get the total number of culumative deaths
-	deaths_total = nat_body[2][2]
+	deaths_total = int(nat_body[2][2])
 
-	return {
+	res = {
 		"location": location,
 		"local_7day_infections": local_7day_infections,
 		"nation_location": "England", # Change with config?
@@ -132,3 +154,5 @@ def covid_API_request(location: str = "Exeter", \
 		"hospital_cases": hospital_cases,
 		"deaths_total": deaths_total
 	}
+	print(res)
+	return res
