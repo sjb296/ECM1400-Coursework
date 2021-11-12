@@ -1,6 +1,5 @@
 from typing import List, Dict, Tuple
 from uk_covid19 import Cov19API
-import json
 import sched
 import time
 # Local modules
