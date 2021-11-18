@@ -90,7 +90,7 @@ def covid_API_request(location: str = "Exeter", \
 
 	- hospital_cases: int - The current number of national hospital cases.
 
-	- deaths_total: int - The total number of deaths in nation_location.
+	- deaths_total: int - The total number of deaths in the UK.
 
 	"""
 	# Get local data
@@ -112,12 +112,17 @@ def covid_API_request(location: str = "Exeter", \
 	local_body = [i.split(",") for i in local_csv_data.split("\n")[1:-1]]
 
 	# Calculate the number of cases in the last 7 days.
-	local_7day_infections = sum([int(i[4]) for i in local_body[0:7]])
+	#local_7day_infections = sum([int(i[4]) for i in local_body[0:7]])
+	local_7day_infections = 0
+	for i in local_body[1:8]:
+		if i[4]:
+			n = int(i[4])
+			local_7day_infections += n
 
 	# Get national data
 	nat_filters = [
 		"areaType=nation",
-		"areaName=England"
+		"areaName=England" # Change with config?
 	]
 	nat_structure = {
 		"areaType" : "areaType",
@@ -134,7 +139,13 @@ def covid_API_request(location: str = "Exeter", \
 	nat_body = [i.split(",") for i in nat_csv_data.split("\n")[1:-1]]
 
 	# Calculate the number of cases in the last 7 days
-	national_7day_infections = sum([int(i[4]) for i in nat_body[1:8]])
+	#national_7day_infections = sum([int(i[4]) for i in nat_body[1:8]])
+	# TODO fix this number?
+	national_7day_infections = 0
+	for i in nat_body[1:8]:
+		if i[4]:
+			n = int(i[4])
+			national_7day_infections += n
 
 	# Get the number of hospital cases
 	if nat_body[0][3]:
@@ -144,7 +155,22 @@ def covid_API_request(location: str = "Exeter", \
 		hospital_cases = int(nat_body[1][3])
 
 	# Get the total number of culumative deaths
-	deaths_total = int(nat_body[2][2])
+	deaths_filters = [
+		"areaType=overview",
+	]
+	deaths_structure = {
+		"cumDeaths28DaysByDeathDate" : "cumDeaths28DaysByDeathDate",
+	}
+	deaths_api = Cov19API(filters=deaths_filters, structure=deaths_structure)
+	deaths_csv_data = deaths_api.get_csv()
+	deaths_body = [i.split(",") for i in deaths_csv_data.split("\n")[1:-1]]
+
+	# Get the number of hospital cases
+	if deaths_body[0][0]:
+		deaths_total = int(deaths_body[0][0])
+	else:
+		# Data for latest day incomplete
+		deaths_total = int(deaths_body[1][0])
 
 	res = {
 		"location": location,
