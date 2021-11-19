@@ -180,5 +180,4 @@ def covid_API_request(location: str = "Exeter", \
 		"hospital_cases": hospital_cases,
 		"deaths_total": deaths_total
 	}
-	print(res)
 	return res
