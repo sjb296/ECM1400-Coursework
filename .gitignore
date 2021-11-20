@@ -1,0 +1,7 @@
+*.swp
+*pycache*
+.~lock*
+tags
+.ctags
+newsapikey
+main-old.py

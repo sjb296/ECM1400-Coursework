@@ -19,7 +19,5 @@ def news_API_request(covid_terms: str \
 		api_key = f.readlines()[0][:-1]
 		api = NewsApiClient(api_key=api_key)
 
-	dt_today = datetime.date.today()
-	dt_week_ago = dt_today - datetime.timedelta(days=7)
-
-	print(api.get_top_headlines(q=covid_terms.lower()))
+	news = dict(api.get_everything(q=covid_terms))
+	return news
