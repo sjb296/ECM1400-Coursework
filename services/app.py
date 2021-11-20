@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, BinaryIO
 from uk_covid19 import Cov19API
 from flask import Flask
 from flask import request
@@ -35,39 +35,43 @@ def update_news(update_interval: float,\
 	return update_name, news_sched
 
 @app.route("/index_files/bootstrap.css")
-def serve_bootstrap_css() -> str:
+def serve_bootstrap_css() -> "Response":
 	"""
 	Serve bootstrap.css.
 	"""
 	return app.send_static_file("index_files/bootstrap.css")
 
 @app.route("/index_files/jquery-3.js")
-def serve_jquery_3_js() -> str:
+def serve_jquery_3_js() -> "Response":
 	"""
 	Serve jquery-3.js.
 	"""
 	return app.send_static_file("index_files/jquery-3.js")
 
 @app.route("/index_files/popper.js")
-def serve_popper_js() -> str:
+def serve_popper_js() -> "Response":
 	"""
 	Serve popper.js.
 	"""
 	return app.send_static_file("index_files/popper.js")
 
 @app.route("/index_files/bootstrap.js")
-def serve_bootstrap_js() -> str:
+def serve_bootstrap_js() -> "Response":
 	"""
 	Serve bootstrap.js.
 	"""
 	return app.send_static_file("index_files/bootstrap.js")
 
 @app.route("/index_files/%20image.html")
-def serve_image_html() -> str:
+def serve_image_html() -> "Response":
 	"""
 	Serve %20image.html.
 	"""
 	return app.send_static_file("index_files/%20image.html")
+
+@app.route("/favicon.ico")
+def serve_favicon() -> "Response":
+	return app.send_static_file("favicon.ico")
 
 @app.route("/")
 @app.route("/index")
