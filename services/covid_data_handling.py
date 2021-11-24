@@ -38,14 +38,27 @@ def process_covid_csv_data(covid_csv_data: List[str]) -> Tuple[int]:
 	 - The cumulative number of deaths
 	"""
 	header = covid_csv_data[0].split(",")
-	print(header)
 	metrics = header[4:]
 	body = [i.split(",") for i in covid_csv_data[1:-1]]
-	for i in body:
-		print(i)
 
 	# Calculate the number of cases in the last 7 days.
-	local_7day_infections = sum([int(i[6]) for i in body[2:9]])
+	local_7day_infections = 0
+	cnt = 0
+	cnt_lim = 7
+	if not body[0][6]:
+		# Blank
+		cnt += 2
+		cnt_lim += 2
+	else:
+		# Not blank
+		cnt += 1
+		cnt_lim += 1
+	for i in range(len(body)):
+		if cnt < cnt_lim:
+			local_7day_infections += int(body[cnt][6])
+		cnt += 1
+
+	#local_7day_infections = sum([int(i[6]) for i in body[2:9]])
 
 	# Retrieve the current number of hospital cases.
 	if body[0][5]:
@@ -108,16 +121,29 @@ def covid_API_request(location: str = "Exeter", \
 	local_api = Cov19API(filters=local_filters, structure=local_structure)
 
 	# Process local data
-	local_csv_data = local_api.get_csv()
+	try:
+		local_csv_data = local_api.get_csv()
+	except SSLError:
+		# TODO: Handle SSLError - Connection related!
+		pass
+
 	local_body = [i.split(",") for i in local_csv_data.split("\n")[1:-1]]
 
 	# Calculate the number of cases in the last 7 days.
-	#local_7day_infections = sum([int(i[4]) for i in local_body[0:7]])
 	local_7day_infections = 0
-	for i in local_body[1:8]:
-		if i[4]:
-			n = int(i[4])
-			local_7day_infections += n
+	cnt = 0
+	cnt_lim = 7
+	for i in local_body:
+		if not i[4]:
+			cnt += 1
+			cnt_lim += 1
+	# Skip the most recent data point because it's incomplete
+	cnt += 1
+	cnt_lim += 1
+	for i in range(len(local_body)):
+		if cnt < cnt_lim:
+			local_7day_infections += int(local_body[cnt][4])
+		cnt += 1
 
 	# Get national data
 	nat_filters = [
@@ -146,6 +172,22 @@ def covid_API_request(location: str = "Exeter", \
 		if i[4]:
 			n = int(i[4])
 			national_7day_infections += n
+	# Calculate the number of cases in the last 7 days.
+	nat_7day_infections = 0
+	cnt = 0
+	cnt_lim = 7
+	for i in nat_body:
+		if not i[4]:
+			cnt += 1
+			cnt_lim += 1
+	# Skip the most recent data point because it's incomplete
+	cnt += 1
+	cnt_lim += 1
+
+	for i in range(len(nat_body)):
+		if cnt < cnt_lim:
+			nat_7day_infections += int(nat_body[cnt][4])
+		cnt += 1
 
 	# Get the number of hospital cases
 	if nat_body[0][3]:
