@@ -3,18 +3,28 @@ from uk_covid19 import Cov19API
 from flask import Flask
 from flask import request
 from flask import render_template
+from datetime import datetime, timedelta
 from markupsafe import escape
+import json
+import re
 import sched
 import time
 # Local modules
 import covid_data_handling as cdh
 import covid_news_handling as cnh
 
+# Global list of update intervals to scheudle on startup,
+# and representative structures to render on the UI.
+global update_events
+global updates
+update_events = []
+updates = []
+
 app = Flask(__name__, \
 			static_folder="/home/sam/Coursework/ECM1400 Coursework/static", \
 			template_folder="/home/sam/Coursework/ECM1400 Coursework/templates")
 
-def schedule_covid_updates(update_interval: float,\
+def schedule_covid_updates(update_interval: float, \
 						   update_name: str) -> sched.scheduler:
 	"""
 	TODO when function finished
@@ -73,6 +83,28 @@ def serve_image_html() -> "Response":
 def serve_favicon() -> "Response":
 	return app.send_static_file("favicon.ico")
 
+def parse_updates() -> Tuple[List[Dict], List]:
+	"""
+	Parse the scheduled updates file and return a list of update
+	data structures.
+	"""
+
+	with open("interval_updates.txt", "r") as f:
+		updates_list = [i.split("¬") for i in f.readlines()]
+
+	# Remove invalid updates
+	updates_list = [i for i in updates_list if not i.is_empty() \
+											   and i[0] != "00:00" \
+											   and (i[3] or i[4])]
+
+	for i in updates_list:
+		i[2] = bool(i[1])
+		i[3] = bool(i[1])
+		i[1] = bool(i[1])
+
+	print(update_events, updates, updates_list)
+	return update_events, updates
+
 @app.route("/")
 @app.route("/index")
 def serve_index(prev_data: Dict = None, \
@@ -90,9 +122,18 @@ def serve_index(prev_data: Dict = None, \
 	data. Provided if only data is updated, or neither are.
 	"""
 
+	# Handle an update removal request if there is one
+	update_to_remove = request.args.get("update_item")
+	if update_to_remove:
+		with open("interval_updates.txt", "w+") as f:
+			updates_list = [i.split("¬") for i in f.readlines()]
+			updates_list = [i for i in updates_list \
+							if i[1] != update_to_remove]
+			updates_lines = ["¬".join(i) for i in updates_list]
+			f.writelines(updates_lines)
+
 	# Data (temp)
 	data = cdh.covid_API_request()
-
 
 	# Handle a news article removal request if there is one
 	article_to_remove = request.args.get("notif")
@@ -118,19 +159,16 @@ def serve_index(prev_data: Dict = None, \
 		national_7day_infections=data["national_7day_infections"],
 		hospital_cases="Hospital cases: " + str(data["hospital_cases"]), \
 		deaths_total="Deaths total: " + str(data["deaths_total"]), \
-		# Scheduled updates list (left)
 		# News headlines list (right)
-		news_articles=news["articles"] \
+		news_articles=news["articles"], \
+		# Scheduled updates list (left)
+		updates=updates \
 	)
 
+print(__name__)
 if __name__ == "__main__":
 	"""
 	Main loop
 	"""
-
+	#update_events, updates = parse_updates()
 	app.run()
-
-
-	#while True:
-	#	schedule_covid_updates(2.0, "Data event")
-	#	update_news(10.0, "News event")

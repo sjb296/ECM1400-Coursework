@@ -1,0 +1,12 @@
+{
+	"updates": [
+		{
+			"update": "00:05",
+			"title": "Both",
+			"repeat": true,
+			"data": true,
+			"news": true,
+			"content": "Both - Every 00:05. Repeat: True, Data: True, News: True."
+		}
+	]
+}
