@@ -19,5 +19,5 @@ def news_API_request(covid_terms: str \
 		api_key = f.readlines()[0][:-1]
 		api = NewsApiClient(api_key=api_key)
 
-	news = dict(api.get_everything(q=covid_terms))
+	news = dict(api.get_top_headlines(q=covid_terms))
 	return news

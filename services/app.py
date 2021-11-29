@@ -108,7 +108,6 @@ def serve_index(prev_data: Dict = None, \
 		ex_news = [i[:-1] for i in f.readlines()]
 		news["articles"] = [i for i in news["articles"] if i["title"] not in ex_news]
 
-
 	return render_template( \
 		"index.html", \
 		title="COVID-19 Dashboard", \
@@ -127,10 +126,4 @@ if __name__ == "__main__":
 	"""
 	Main loop
 	"""
-
 	app.run()
-
-
-	#while True:
-	#	schedule_covid_updates(2.0, "Data event")
-	#	update_news(10.0, "News event")
