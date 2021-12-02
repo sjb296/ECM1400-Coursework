@@ -48,6 +48,4 @@ def news_API_request(covid_terms: str \
 		"articles": articles
 	}
 
-	print(news)
-
 	return news
