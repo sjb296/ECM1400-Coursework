@@ -106,6 +106,9 @@ def load_updates_from_file() -> None:
 	"""
 	"""
 
+	global updates
+	updates = []
+
 	with open("updates.csv", "r") as f:
 		updates_csv = [i.split("¬") for i in f.readlines()]
 
@@ -114,6 +117,7 @@ def load_updates_from_file() -> None:
 		i[-1] = i[-1][:-1]
 
 	# TODO: Dismantle this when implementing logging
+	# TODO: Check time format is valid
 	updates_csv = [i for i in updates_csv if len(i) == 5 \
 										  and i[0] != "00:00" \
 										  and i[1] \
