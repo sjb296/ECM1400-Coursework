@@ -150,8 +150,21 @@ def load_updates_from_file() -> None:
 		if current_update not in updates:
 			updates.append(current_update)
 
-	print(updates_csv)
+	#print(updates_csv)
 	print(updates)
+
+def add_update(update_time: str,
+			   update_name: str,
+			   update_repeat: bool,
+			   update_data: bool,
+			   update_news: bool) -> None:
+	"""
+	"""
+	with open("updates.csv", "a") as f:
+		#
+		f.write(f"{update_time}¬{update_name}¬" +
+				f"{update_repeat}¬{update_data}¬{update_news}\n")
+
 
 @app.route("/")
 @app.route("/index")
@@ -174,9 +187,33 @@ def serve_index(prev_data: Dict = None, \
 	data = cdh.covid_API_request()
 
 	# Handle an update addition request if there is one
-#	if request.args.get("update"):
-#		print(request.args)
-#		add_update(request.args)
+	if request.args.get("update"):
+		print(request.args)
+		update_time   = request.args.get("update")
+		update_name   = request.args.get("two")
+		update_repeat = request.args.get("repeat")
+		update_data   = request.args.get("covid-data")
+		update_news   = request.args.get("news")
+
+		if update_repeat == "repeat":
+			print("REPEAT")
+			update_repeat = True
+		else:
+			update_repeat = False
+		if update_data == "covid-data":
+			update_data = True
+		else:
+			update_data = False
+		if update_news == "news":
+			update_news = True
+		else:
+			update_news = False
+
+		add_update(update_time,
+				   update_name,
+				   update_repeat,
+				   update_data,
+				   update_news)
 
 	# Handle an update removal request if there is one
 	update_to_remove = request.args.get("update_item")
