@@ -6,3 +6,5 @@ tags
 newsapikey
 main-old.py
 services/nation_2021-10-28_TEST.csv
+services/updates.csv
+services/excluded_news.txt
