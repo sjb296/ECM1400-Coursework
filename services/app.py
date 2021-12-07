@@ -5,6 +5,7 @@ from flask import request
 from flask import render_template
 from flask import Markup
 from datetime import datetime
+from datetime import timedelta
 from markupsafe import escape
 import sched
 import time
@@ -15,6 +16,9 @@ import covid_news_handling as cnh
 # List of update structures to render to the UI.
 global updates
 updates = []
+# List of non-repeat update structures to render to the UI
+global s_updates
+s_updates = []
 # Queue of scheduled event objects to consume on refresh.
 global update_events
 update_events = sched.scheduler(time.time, time.sleep)
@@ -82,6 +86,25 @@ def remove_update_from_file(update_item: str) -> None:
 	f.write(updates_text)
 	f.close()
 
+def remove_single_update_from_file(s_update_item: str) -> None:
+	"""
+	"""
+	f = open("single_updates.csv", "r")
+	# Read in and remove entry
+	s_updates_csv = [i.split("¬") for i in f.readlines()]
+	s_updates_csv = [i for i in s_updates_csv if i[1] != s_update_item]
+
+	# Write back
+	s_updates_rows = []
+	s_updates_text = ""
+	for row in s_updates_csv:
+		s_updates_rows.append("¬".join(row))
+	s_updates_text = "".join(s_updates_rows)
+	f.close()
+
+	f = open("single_updates.csv", "w")
+	f.write(s_updates_text)
+	f.close()
 
 def load_updates_from_file() -> None:
 	"""
@@ -139,7 +162,61 @@ def load_updates_from_file() -> None:
 	#print(updates_csv)
 	print(updates)
 
-def add_update(update: Dict) -> None:
+def load_single_updates_from_file() -> None:
+	"""
+	"""
+	current_utime = time.time()
+
+	global s_updates
+	s_updates = []
+
+	with open("single_updates.csv", "r") as f:
+		s_updates_csv = [i.split("¬") for i in f.readlines()]
+
+	# Remove newlines
+	for i in s_updates_csv:
+		i[-1] = i[-1][:-1]
+
+	# TODO: Dismantle this when implementing logging
+	# TODO: Check time format is valid
+	s_updates_csv = [i for i in s_updates_csv if len(i) == 4       \
+										  and i[0] > current_utime \
+										  and i[1]                 \
+										  and (i[2] == "True"      \
+										  	   or i[3] == "True")]
+
+	# Fill s_updates with renderable structures
+	for row in s_updates_csv:
+		current_s_update = dict()
+
+		# Get the time until the event is to be run
+		future_utime = row[0]
+		current_utime = datetime.now().timestamp()
+		interval = future_utime - current_utime
+		current_s_update["time"] = interval
+
+		current_s_update["title"] = row[1]
+		current_s_update["content"] = f"Time until update: {interval}<br/>" + \
+									  f"Update data: {row[3]}<br/>" +       \
+									  f"Update news: {row[4]}<br/>"
+		current_s_update["content"] = Markup(current_s_update["content"])
+
+		if row[2] == "True":
+			current_s_update["data"] = True
+		else:
+			current_s_update["data"] = False
+		if row[3] == "True":
+			current_s_update["news"] = True
+		else:
+			current_s_update["news"] = False
+
+		if current_s_update not in s_updates:
+			s_updates.append(current_s_update)
+
+	print(s_updates_csv)
+	print(s_updates)
+
+def add_repeat_update(update: Dict) -> None:
 	"""
 	"""
 	with open("updates.csv", "r") as f:
@@ -151,6 +228,29 @@ def add_update(update: Dict) -> None:
 		if line not in update_rows:
 			f.write(line)
 	return line not in update_rows
+
+def add_single_update(s_update: Dict) -> None:
+	"""
+	"""
+	with open("single_updates.csv", "r") as f:
+		s_update_rows = f.readlines()
+		print(s_update_rows)
+	with open("single_updates.csv", "a") as f:
+		line = f"{s_update['time']}¬{s_update['title']}¬" + \
+			   f"{s_update['data']}¬{s_update['news']}\n"
+		if line not in s_update_rows:
+			f.write(line)
+	return line not in s_update_rows
+
+def schedule_single_event(scheduler: sched.scheduler,
+						  interval: float,
+						  update_name: str,
+						  action: Callable,
+						  actionargs: Tuple = ()) -> None:
+	"""
+	"""
+	scheduler.enter(interval, 1, action, actionargs)
+	remove_update_from_file(update_name)
 
 def schedule_repeat_event(scheduler: sched.scheduler,
 				   		  interval: float,
@@ -184,6 +284,12 @@ def schedule_covid_updates(update_interval: float,\
 							  update_interval,
 							  execute_data_update,
 							  ())
+	else:
+		schedule_single_event(update_events,
+							  update_interval,
+							  execute_data_update,
+							  (),
+							  update_name)
 
 def update_news(update_interval: float,\
 				update_name: str,
@@ -196,6 +302,12 @@ def update_news(update_interval: float,\
 	if update_repeat:
 		schedule_repeat_event(update_events,
 							  update_interval,
+							  execute_news_update,
+							  ())
+	else:
+		schedule_single_event(update_events,
+							  update_interval,
+							  update_name,
 							  execute_news_update,
 							  ())
 
@@ -247,6 +359,17 @@ def serve_index(prev_data: Dict = None, \
 			new_update["repeat"] = True
 		else:
 			new_update["repeat"] = False
+			# Correct time to the appropriate unix time in the future
+			current_utime = datetime.now().timestamp()
+			interval = datetime.strptime(new_update["time"], "%H:%M")
+			future_utime = current_utime            \
+						   + interval.second        \
+						   + interval.minute * 60   \
+						   + interval.hour   * 3600
+
+			print(current_utime)
+			print(future_utime)
+			new_update["time"] = future_utime
 		if new_update_data == "covid-data":
 			new_update["data"] = True
 		else:
@@ -263,10 +386,11 @@ def serve_index(prev_data: Dict = None, \
 		new_update["content"] = Markup(new_update["content"])
 
 		# New update time in seconds
-		t = datetime.strptime(new_update["time"], "%H:%M")
-		new_update["time_secs"] = t.second + t.minute*60 + t.hour*3600
+		if new_update["repeat"]:
+			t = datetime.strptime(new_update["time"], "%H:%M")
+			new_update["time_secs"] = t.second + t.minute*60 + t.hour*3600
 
-		update_not_dupe = add_update(new_update)
+		update_not_dupe = add_repeat_update(new_update)
 		if update_not_dupe:
 			updates.append(new_update)
 
@@ -283,16 +407,30 @@ def serve_index(prev_data: Dict = None, \
 	# Load updates into the queue
 	if is_new_update:
 		# Add the new update to the queue
-		if new_update["data"] and update_not_dupe:
-			schedule_repeat_event(update_events,
-								  new_update["time_secs"],
-								  execute_data_update,
-								  ())
-		if new_update["news"] and update_not_dupe:
-			schedule_repeat_event(update_events,
-								  new_update["time_secs"],
-								  execute_news_update,
-								  ())
+		if new_update["repeat"]:
+			if new_update["data"] and update_not_dupe:
+				schedule_repeat_event(update_events,
+									  new_update["time_secs"],
+									  execute_data_update,
+									  ())
+			if new_update["news"] and update_not_dupe:
+				schedule_repeat_event(update_events,
+									  new_update["time_secs"],
+									  execute_news_update,
+									  ())
+		else:
+			if new_update["data"] and update_not_dupe:
+				schedule_single_event(update_events,
+									  new_update["time_secs"],
+									  new_update["title"],
+									  execute_news_update,
+									  ())
+			if new_update["news"] and update_not_dupe:
+				schedule_single_event(update_events,
+									  new_update["time_secs"],
+									  new_update["title"],
+									  execute_data_update,
+									  ())
 
 	print(updates)
 	print(len(update_events.queue))
