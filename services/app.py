@@ -5,8 +5,11 @@ from flask import request
 from flask import render_template
 from flask import Markup
 <<<<<<< HEAD
+<<<<<<< HEAD
 from datetime import datetime
 from datetime import timedelta
+=======
+>>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
 =======
 >>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
 from markupsafe import escape
@@ -20,10 +23,14 @@ import covid_news_handling as cnh
 global updates
 updates = []
 <<<<<<< HEAD
+<<<<<<< HEAD
 # List of non-repeat update structures to render to the UI
 global s_updates
 s_updates = []
 # Queue of scheduled event objects to consume on refresh.
+=======
+# List of scheduled event objects to cycle through on refresh.
+>>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
 =======
 # List of scheduled event objects to cycle through on refresh.
 >>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
@@ -185,6 +192,7 @@ def load_updates_from_file() -> None:
 	print(updates)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 def load_single_updates_from_file() -> None:
 	"""
 	"""
@@ -289,11 +297,16 @@ def do_repeat_event(scheduler: sched.scheduler,
 					action: Callable,
 					actionargs: Tuple = ()) -> None:
 =======
+=======
+>>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
 def add_update(update_time: str,
 			   update_name: str,
 			   update_repeat: bool,
 			   update_data: bool,
 			   update_news: bool) -> None:
+<<<<<<< HEAD
+>>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
+=======
 >>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
 	"""
 	"""
@@ -302,6 +315,7 @@ def add_update(update_time: str,
 		f.write(f"{update_time}¬{update_name}¬" +
 				f"{update_repeat}¬{update_data}¬{update_news}\n")
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 def schedule_covid_updates(update_interval: float,\
 						   update_name: str,
@@ -354,6 +368,8 @@ def execute_news_update() -> None:
 	print("----\nNEWS\n----")
 =======
 >>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
+=======
+>>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
 
 @app.route("/")
 @app.route("/index")
@@ -389,6 +405,7 @@ def serve_index(prev_data: Dict = None, \
 			update_repeat = True
 		else:
 <<<<<<< HEAD
+<<<<<<< HEAD
 			new_update["repeat"] = False
 			# Correct time to the appropriate unix time in the future
 			current_utime = datetime.now().timestamp()
@@ -408,11 +425,17 @@ def serve_index(prev_data: Dict = None, \
 		if update_data == "covid-data":
 			update_data = True
 >>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
+=======
+			update_repeat = False
+		if update_data == "covid-data":
+			update_data = True
+>>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
 		else:
 			update_data = False
 		if update_news == "news":
 			update_news = True
 		else:
+<<<<<<< HEAD
 <<<<<<< HEAD
 			new_update["news"] = False
 
@@ -433,11 +456,18 @@ def serve_index(prev_data: Dict = None, \
 =======
 			update_news = False
 
+=======
+			update_news = False
+
+>>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
 		add_update(update_time,
 				   update_name,
 				   update_repeat,
 				   update_data,
 				   update_news)
+<<<<<<< HEAD
+>>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
+=======
 >>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
 
 	# Handle an update removal request if there is one
@@ -449,6 +479,7 @@ def serve_index(prev_data: Dict = None, \
 		updates = [i for i in updates if i["title"] != update_to_remove]
 
 	# Load the updates from the file
+<<<<<<< HEAD
 <<<<<<< HEAD
 	#load_updates_from_file()
 	# Load updates into the queue
@@ -482,6 +513,10 @@ def serve_index(prev_data: Dict = None, \
 	print(updates)
 	print(len(update_events.queue))
 	print(update_events.run(blocking=False))
+=======
+	load_updates_from_file()
+	# Consume the update queue
+>>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
 =======
 	load_updates_from_file()
 	# Consume the update queue
