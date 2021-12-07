@@ -1,14 +1,11 @@
-from typing import List, Dict, Tuple, BinaryIO
+from typing import List, Dict, Tuple, BinaryIO, Callable
 from uk_covid19 import Cov19API
 from flask import Flask
 from flask import request
 from flask import render_template
 from flask import Markup
-<<<<<<< HEAD
 from datetime import datetime
 from datetime import timedelta
-=======
->>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
 from markupsafe import escape
 import sched
 import time
@@ -19,40 +16,16 @@ import covid_news_handling as cnh
 # List of update structures to render to the UI.
 global updates
 updates = []
-<<<<<<< HEAD
 # List of non-repeat update structures to render to the UI
 global s_updates
 s_updates = []
 # Queue of scheduled event objects to consume on refresh.
-=======
-# List of scheduled event objects to cycle through on refresh.
->>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
 global update_events
-update_events = []
+update_events = sched.scheduler(time.time, time.sleep)
 
-app = Flask(__name__, \
-			static_folder="/home/sam/Coursework/ECM1400 Coursework/static", \
+app = Flask(__name__,
+			static_folder="/home/sam/Coursework/ECM1400 Coursework/static",
 			template_folder="/home/sam/Coursework/ECM1400 Coursework/templates")
-
-def schedule_covid_updates(update_interval: float,\
-						   update_name: str) -> sched.scheduler:
-	"""
-	TODO when function finished
-	"""
-	data_sched = sched.scheduler(time.time, time.sleep)
-	# TODO Customise arguments with config
-	data_sched.enter(update_interval, 1, cdh.covid_API_request)
-	return update_name, data_sched
-
-def update_news(update_interval: float,\
-				update_name: str) -> sched.scheduler:
-	"""
-	TODO when function finished
-	"""
-	news_sched = sched.scheduler(time.time, time.sleep)
-	# TODO Customise arguments with config
-	news_sched.enter(update_interval, 1, cnh.news_API_request)
-	return update_name, news_sched
 
 @app.route("/index_files/bootstrap.css")
 def serve_bootstrap_css() -> "Response":
@@ -158,6 +131,7 @@ def load_updates_from_file() -> None:
 	# Fill updates with renderable structures
 	for row in updates_csv:
 		current_update = dict()
+		current_update["time"] = row[0]
 		current_update["title"] = row[1]
 		current_update["content"] = f"Interval: {row[0]}<br/>" + \
 									f"Repeat: {row[2]}<br/>" + \
@@ -181,10 +155,13 @@ def load_updates_from_file() -> None:
 		if current_update not in updates:
 			updates.append(current_update)
 
+		# New update time in seconds
+		t = datetime.strptime(current_update["time"], "%H:%M")
+		current_update["time_secs"] = t.second + t.minute*60 + t.hour*3600
+
 	#print(updates_csv)
 	print(updates)
 
-<<<<<<< HEAD
 def load_single_updates_from_file() -> None:
 	"""
 	"""
@@ -288,21 +265,12 @@ def do_repeat_event(scheduler: sched.scheduler,
 					interval: float,
 					action: Callable,
 					actionargs: Tuple = ()) -> None:
-=======
-def add_update(update_time: str,
-			   update_name: str,
-			   update_repeat: bool,
-			   update_data: bool,
-			   update_news: bool) -> None:
->>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
 	"""
 	"""
-	with open("updates.csv", "a") as f:
-		#
-		f.write(f"{update_time}¬{update_name}¬" +
-				f"{update_repeat}¬{update_data}¬{update_news}\n")
+	action(*actionargs)
+	scheduler.enter(interval, 1, do_repeat_event,
+					(scheduler, interval, action, actionargs))
 
-<<<<<<< HEAD
 def schedule_covid_updates(update_interval: float,\
 						   update_name: str,
 						   update_repeat: bool) -> sched.scheduler:
@@ -352,8 +320,6 @@ def execute_news_update() -> None:
 	"""
 	"""
 	print("----\nNEWS\n----")
-=======
->>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
 
 @app.route("/")
 @app.route("/index")
@@ -372,23 +338,26 @@ def serve_index(prev_data: Dict = None, \
 	data. Provided if only data is updated, or neither are.
 	"""
 
+	global updates
+	global update_events
+
 	# Data (temp)
 	data = cdh.covid_API_request()
 
+	is_new_update = False
 	# Handle an update addition request if there is one
 	if request.args.get("update"):
-		print(request.args)
-		update_time   = request.args.get("update")
-		update_name   = request.args.get("two")
-		update_repeat = request.args.get("repeat")
-		update_data   = request.args.get("covid-data")
-		update_news   = request.args.get("news")
+		is_new_update = True
+		new_update = dict()
+		new_update["time"]  = request.args.get("update")
+		new_update["title"] = request.args.get("two")
+		new_update_repeat   = request.args.get("repeat")
+		new_update_data     = request.args.get("covid-data")
+		new_update_news     = request.args.get("news")
 
-		if update_repeat == "repeat":
-			print("REPEAT")
-			update_repeat = True
+		if new_update_repeat == "repeat":
+			new_update["repeat"] = True
 		else:
-<<<<<<< HEAD
 			new_update["repeat"] = False
 			# Correct time to the appropriate unix time in the future
 			current_utime = datetime.now().timestamp()
@@ -403,17 +372,11 @@ def serve_index(prev_data: Dict = None, \
 			new_update["time"] = future_utime
 		if new_update_data == "covid-data":
 			new_update["data"] = True
-=======
-			update_repeat = False
-		if update_data == "covid-data":
-			update_data = True
->>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
 		else:
-			update_data = False
-		if update_news == "news":
-			update_news = True
+			new_update["data"] = False
+		if new_update_news == "news":
+			new_update["news"] = True
 		else:
-<<<<<<< HEAD
 			new_update["news"] = False
 
 		new_update["content"] = f"Interval: {new_update['time']}<br/>" + \
@@ -430,26 +393,16 @@ def serve_index(prev_data: Dict = None, \
 		update_not_dupe = add_repeat_update(new_update)
 		if update_not_dupe:
 			updates.append(new_update)
-=======
-			update_news = False
-
-		add_update(update_time,
-				   update_name,
-				   update_repeat,
-				   update_data,
-				   update_news)
->>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
 
 	# Handle an update removal request if there is one
 	update_to_remove = request.args.get("update_item")
 	if update_to_remove:
 		remove_update_from_file(update_to_remove)
 
-		global updates
 		updates = [i for i in updates if i["title"] != update_to_remove]
+		setup_event_queue()
 
 	# Load the updates from the file
-<<<<<<< HEAD
 	#load_updates_from_file()
 	# Load updates into the queue
 	if is_new_update:
@@ -482,10 +435,6 @@ def serve_index(prev_data: Dict = None, \
 	print(updates)
 	print(len(update_events.queue))
 	print(update_events.run(blocking=False))
-=======
-	load_updates_from_file()
-	# Consume the update queue
->>>>>>> parent of b32c054... Implemented the thumbnail image and repeat update scheduling.
 
 	# Handle a news article removal request if there is one
 	article_to_remove = request.args.get("notif")
@@ -516,6 +465,26 @@ def serve_index(prev_data: Dict = None, \
 		# News headlines list (right)
 		news_articles=news["articles"] \
 	)
+
+@app.before_first_request
+def setup_event_queue() -> None:
+	"""
+	"""
+	global update_events
+	update_events = sched.scheduler(time.time, time.sleep)
+	load_updates_from_file()
+	for update in updates:
+		if update["data"]:
+			schedule_repeat_event(update_events,
+								  update["time_secs"],
+								  execute_data_update,
+								  ())
+		if update["news"]:
+			schedule_repeat_event(update_events,
+								  update["time_secs"],
+								  execute_news_update,
+								  ())
+
 
 if __name__ == "__main__":
 	"""
