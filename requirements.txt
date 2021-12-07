@@ -1,5 +1,0 @@
-Flask==2.0.2
-MarkupSafe==2.0.1
-newsapi==0.1.1
-newsapi_python==0.2.6
-uk_covid19==1.2.2
