@@ -1,5 +1,6 @@
 from typing import List, Dict, Tuple
 from newsapi import NewsApiClient
+from flask import Markup
 import sched
 import time
 import datetime
@@ -41,6 +42,15 @@ def news_API_request(covid_terms: str \
 	# Remove duplicates
 	articles = []
 	[articles.append(i) for i in articles_dupes if i not in articles]
+
+	# Add a hyperlink and fix articles with no text content.
+	for i in articles:
+		tmp = i["title"]
+		i["title"] = Markup(f"<a href='{i['url']}'>{tmp}</a>")
+		if i["content"] == None:
+			i["content"] = "No text preview found!"
+		else:
+			i["content"] = Markup(i["content"])
 
 	news = {
 		"status": status,

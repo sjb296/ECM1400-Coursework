@@ -9,15 +9,18 @@ from markupsafe import escape
 import sched
 import time
 # Local modules
-import covid_data_handling as cdh
+import covid_data_handler as cdh
 import covid_news_handling as cnh
 
 # List of update structures to render to the UI.
 global updates
 updates = []
 # Queue of scheduled event objects to consume on refresh.
-global update_events
-update_events = sched.scheduler(time.time, time.sleep)
+global repeat_events
+repeat_events = sched.scheduler(time.time, time.sleep)
+# Queue of nonrepeat events to consume on refresh.
+global single_events
+single_events = sched.scheduler(time.time, time.sleep)
 
 app = Flask(__name__,
 			static_folder="/home/sam/Coursework/ECM1400 Coursework/static",
@@ -88,7 +91,6 @@ def load_updates_from_file() -> None:
 	"""
 
 	global updates
-	updates = []
 
 	with open("updates.csv", "r") as f:
 		updates_csv = [i.split("¬") for i in f.readlines()]
@@ -136,6 +138,9 @@ def load_updates_from_file() -> None:
 		t = datetime.strptime(current_update["time"], "%H:%M")
 		current_update["time_secs"] = t.second + t.minute*60 + t.hour*3600
 
+	tmp = updates
+	updates = []
+	[updates.append(i) for i in tmp if i not in updates]
 	#print(updates_csv)
 	print(updates)
 
@@ -144,13 +149,31 @@ def add_update(update: Dict) -> None:
 	"""
 	with open("updates.csv", "r") as f:
 		update_rows = f.readlines()
+		update_csv = [i.split("¬") for i in update_rows]
 		print(update_rows)
 	with open("updates.csv", "a+") as f:
 		line = f"{update['time']}¬{update['title']}¬" + \
 			   f"{update['repeat']}¬{update['data']}¬{update['news']}\n"
-		if line not in update_rows:
+		print([i[1] for i in update_csv])
+		if update["title"] not in [i[1] for i in update_csv]:
+			print(f"{update['title']} -- {[i[1] for i in update_csv]}")
 			f.write(line)
-	return line not in update_rows
+			return True
+		else:
+			return False
+
+def schedule_single_event(update_name: str,
+						  scheduler: sched.scheduler,
+						  interval: float,
+						  action: Callable,
+						  actionargs: Tuple = ()) -> None:
+	"""
+	"""
+	scheduler.enter(interval, 1, action, actionargs)
+	remove_update_from_file(update_name)
+
+	#global updates
+	#updates = [i for i in updates if i["title"] != update_name]
 
 def schedule_repeat_event(scheduler: sched.scheduler,
 				   		  interval: float,
@@ -171,48 +194,88 @@ def do_repeat_event(scheduler: sched.scheduler,
 	scheduler.enter(interval, 1, do_repeat_event,
 					(scheduler, interval, action, actionargs))
 
-def schedule_covid_updates(update_interval: float,\
+def schedule_covid_updates(update_interval: float,
 						   update_name: str,
 						   update_repeat: bool) -> sched.scheduler:
 	"""
 	TODO when function finished
 	"""
 	# TODO Customise arguments with config
-	global update_events
+	global repeat_events
+	global single_events
 	if update_repeat:
-		schedule_repeat_event(update_events,
+		schedule_repeat_event(repeat_events,
 							  update_interval,
 							  execute_data_update,
 							  ())
+	else:
+		schedule_single_event(update_name,
+							  single_events,
+							  update_interval,
+							  execute_data_update,
+							  (True, update_name))
 
-def update_news(update_interval: float,\
+def update_news(update_interval: float,
 				update_name: str,
 				update_repeat: bool) -> None:
 	"""
 	TODO when function finished
 	"""
 	# TODO Customise arguments with config
-	global update_events
+	global repeat_events
+	global single_events
 	if update_repeat:
-		schedule_repeat_event(update_events,
+		schedule_repeat_event(repeat_events,
 							  update_interval,
 							  execute_news_update,
 							  ())
+	else:
+		schedule_single_event(update_name,
+							  single_events,
+							  update_interval,
+							  execute_news_update,
+							  (True, update_name))
 
-def execute_data_update() -> None:
+def schedule_update_event(update: Dict) -> None:
 	"""
 	"""
+	global repeat_events
+	global single_events
+	if update["data"]:
+		schedule_covid_updates(update["time_secs"],
+							   update["title"],
+							   update["repeat"])
+	if update["news"]:
+		update_news(update["time_secs"],
+					update["title"],
+					update["repeat"])
+
+
+def execute_data_update(event_is_single: bool = False,
+						single_update_name: str = "") -> None:
+	"""
+	"""
+	global updates
+	if event_is_single and single_update_name:
+		updates = [i for i in updates if i["title"] != single_update_name]
+		remove_update_from_file(single_update_name)
+
 	print("----\nDATA\n----")
 
-def execute_news_update() -> None:
+def execute_news_update(event_is_single: bool = False,
+						single_update_name: str = "") -> None:
 	"""
 	"""
+	global updates
+	if event_is_single and single_update_name:
+		updates = [i for i in updates if i["title"] != single_update_name]
+		remove_update_from_file(single_update_name)
+
 	print("----\nNEWS\n----")
 
 @app.route("/")
 @app.route("/index")
-def serve_index(prev_data: Dict = None, \
-				prev_news: Dict = None) -> str:
+def serve_index() -> "Response":
 	"""
 	Acquire the necessary data and render the dashboard template
 	(the homepage).
@@ -227,21 +290,31 @@ def serve_index(prev_data: Dict = None, \
 	"""
 
 	global updates
-	global update_events
+	global repeat_events
+	global single_events
 
 	# Data (temp)
 	data = cdh.covid_API_request()
 
-	is_new_update = False
 	# Handle an update addition request if there is one
-	if request.args.get("update"):
+	is_new_update = False
+	update_to_add = request.args.get("update")
+	update_titles = [i["title"] for i in updates]
+
+	new_update_data     = request.args.get("covid-data")
+	new_update_news     = request.args.get("news")
+
+	if update_to_add and update_to_add not in update_titles and \
+	   (new_update_data or new_update_news):
+		is_new_update = True
+
+	if is_new_update:
+		print("NEW UPDATE")
 		is_new_update = True
 		new_update = dict()
 		new_update["time"]  = request.args.get("update")
 		new_update["title"] = request.args.get("two")
 		new_update_repeat   = request.args.get("repeat")
-		new_update_data     = request.args.get("covid-data")
-		new_update_news     = request.args.get("news")
 
 		if new_update_repeat == "repeat":
 			new_update["repeat"] = True
@@ -269,6 +342,7 @@ def serve_index(prev_data: Dict = None, \
 		update_not_dupe = add_update(new_update)
 		if update_not_dupe:
 			updates.append(new_update)
+			schedule_update_event(new_update)
 
 	# Handle an update removal request if there is one
 	update_to_remove = request.args.get("update_item")
@@ -278,25 +352,11 @@ def serve_index(prev_data: Dict = None, \
 		updates = [i for i in updates if i["title"] != update_to_remove]
 		setup_event_queue()
 
-	# Load the updates from the file
-	#load_updates_from_file()
-	# Load updates into the queue
-	if is_new_update:
-		# Add the new update to the queue
-		if new_update["data"] and update_not_dupe:
-			schedule_repeat_event(update_events,
-								  new_update["time_secs"],
-								  execute_data_update,
-								  ())
-		if new_update["news"] and update_not_dupe:
-			schedule_repeat_event(update_events,
-								  new_update["time_secs"],
-								  execute_news_update,
-								  ())
-
 	print(updates)
-	print(len(update_events.queue))
-	print(update_events.run(blocking=False))
+	print(len(repeat_events.queue))
+	print(repeat_events.run(blocking=False))
+	print(len(single_events.queue))
+	print(single_events.run(blocking=False))
 
 	# Handle a news article removal request if there is one
 	article_to_remove = request.args.get("notif")
@@ -332,21 +392,13 @@ def serve_index(prev_data: Dict = None, \
 def setup_event_queue() -> None:
 	"""
 	"""
-	global update_events
-	update_events = sched.scheduler(time.time, time.sleep)
+	global repeat_events
+	global single_events
+	repeat_events = sched.scheduler(time.time, time.sleep)
+	single_events = sched.scheduler(time.time, time.sleep)
 	load_updates_from_file()
 	for update in updates:
-		if update["data"]:
-			schedule_repeat_event(update_events,
-								  update["time_secs"],
-								  execute_data_update,
-								  ())
-		if update["news"]:
-			schedule_repeat_event(update_events,
-								  update["time_secs"],
-								  execute_news_update,
-								  ())
-
+		schedule_update_event(update)
 
 if __name__ == "__main__":
 	"""
