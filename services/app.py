@@ -13,6 +13,16 @@ import covid_data_handler as cdh
 import covid_news_handling as cnh
 
 # List of update structures to render to the UI.
+#An update entry looks like this:
+#{
+#	"time": "HH:MM",
+#	"title": "...",
+#	"content": "...",
+#	"repeat": True/False,
+#	"data": True/False,
+#	"news": True/False
+#	"time_secs": X
+#}
 global updates
 updates = []
 # Queue of scheduled event objects to consume on refresh.
@@ -66,7 +76,19 @@ def serve_favicon() -> "Response":
 	return app.send_static_file("favicon.ico")
 
 def remove_update_from_file(update_item: str) -> None:
-	"""
+	"""Remove a particular update entry from the updates file.
+
+	Parameters
+	----------
+	update_item: str - The title of the update to remove
+
+	Returns
+	-------
+	None
+
+	Modifies file(s)
+	----------------
+	updates.csv
 	"""
 	f = open("updates.csv", "r")
 	# Read in and remove entry
@@ -87,7 +109,20 @@ def remove_update_from_file(update_item: str) -> None:
 
 
 def load_updates_from_file() -> None:
-	"""
+	"""Loads update entries from the updates file for use by the server
+	at runtime.
+
+	Parameters
+	----------
+	None
+
+	Returns
+	-------
+	None
+
+	Modifies global(s)
+	------------------
+	updates: List[Dict] - The list of update entries in dictionary form
 	"""
 
 	global updates
@@ -145,7 +180,23 @@ def load_updates_from_file() -> None:
 	print(updates)
 
 def add_update(update: Dict) -> None:
-	"""
+	"""Adds an update to the updates file from an update dictionary.
+
+	Parameters
+	----------
+	update: Dict - An update dictionary (see the updates global)
+
+	Returns
+	-------
+	None
+
+	Modifies global(s)
+	------------------
+	None
+
+	Modified file(s)
+	----------------
+	updates.csv
 	"""
 	with open("updates.csv", "r") as f:
 		update_rows = f.readlines()
@@ -167,19 +218,67 @@ def schedule_single_event(update_name: str,
 						  interval: float,
 						  action: Callable,
 						  actionargs: Tuple = ()) -> None:
-	"""
+	"""Schedule a single (i.e. non-repeating) event on the given queue.
+
+	Parameters
+	----------
+	update_name: str - The title of the update.
+
+	scheduler: sched.scheduler - The scheduler on which to place the
+	event.
+
+	interval: float - The interval of the event.
+
+	action: Callable - The event's callback function.
+
+	actionargs: Tuple = () - The event's callback's arguments.
+
+	Returns
+	-------
+	None
+
+	Modifies global(s)
+	------------------
+	single_events: sched.scheduler - When passed in.
+
+	updates: List[Dict] - By removing the update executed from
+	the updates dictionary because it's finished.
+
+	Mofifies file(s)
+	----------------
+	None
 	"""
 	scheduler.enter(interval, 1, action, actionargs)
 	remove_update_from_file(update_name)
-
-	#global updates
-	#updates = [i for i in updates if i["title"] != update_name]
 
 def schedule_repeat_event(scheduler: sched.scheduler,
 				   		  interval: float,
 						  action: Callable,
 						  actionargs: Tuple = ()) -> None:
-	"""
+	"""Schedule a repeating event onto the given queue.
+
+	Parameters
+	----------
+	scheduler: sched.scheduler - The scheduler on which to place the
+	event.
+
+	interval: float - The interval of the event.
+
+	action: Callable - The event's callback function.
+
+	actionargs: Tuple = () - The event's callback's arguments.
+
+	Returns
+	-------
+	None
+
+	Modifies global(s)
+	------------------
+	repeat_events: sched.scheduler - When passed in
+
+	Modifies file(s)
+	----------------
+	None
 	"""
 	scheduler.enter(interval, 1, do_repeat_event,
 					(scheduler, interval, action, actionargs))
@@ -188,7 +287,32 @@ def do_repeat_event(scheduler: sched.scheduler,
 					interval: float,
 					action: Callable,
 					actionargs: Tuple = ()) -> None:
-	"""
+	"""Carry out the event scheduled by schedule_repeat_event and
+	reschedule the same event so it repeats.
+
+	Parameters
+	----------
+	scheduler: sched.scheduler - The scheduler on which to place the
+	event.
+
+	interval: float - The interval of the event.
+
+	action: Callable - The event's callback function.
+
+	actionargs: Tuple = () - The event's callback's arguments.
+
+	Returns
+	-------
+	None
+
+	Modifies global(s)
+	------------------
+	repeat_events: sched.scheduler - When passed in to
+	schedule_repeat_event.
+
+	Modifies file(s)
+	----------------
+	None
 	"""
 	action(*actionargs)
 	scheduler.enter(interval, 1, do_repeat_event,
@@ -198,7 +322,6 @@ def schedule_covid_updates(update_interval: float,
 						   update_name: str,
 						   update_repeat: bool) -> sched.scheduler:
 	"""
-	TODO when function finished
 	"""
 	# TODO Customise arguments with config
 	global repeat_events

@@ -75,6 +75,13 @@ def process_covid_csv_data(covid_csv_data: List[str]) -> Tuple[int]:
 
 	return local_7day_infections, current_hospital_cases, deaths_total
 
+def schedule_covid_updates(update_interval: float,
+						   update_name: str) -> None:
+	"""Dummy function for the automated tests. The real function
+	is in app.py.
+	"""
+	pass
+
 def covid_API_request(location: str = "Exeter", \
 					  location_type: str = "ltla") -> Dict:
 	"""

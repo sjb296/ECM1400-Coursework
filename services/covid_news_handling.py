@@ -6,6 +6,12 @@ import time
 import datetime
 import json
 
+def update_news(update_name: str) -> None:
+	"""Dummy function for the automated tests. The real function is
+	in app.py.
+	"""
+	pass
+
 def news_API_request(covid_terms: str \
 						="Covid COVID-19 coronavirus") -> Dict:
 	"""
