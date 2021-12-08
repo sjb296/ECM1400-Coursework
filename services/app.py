@@ -32,6 +32,15 @@ repeat_events = sched.scheduler(time.time, time.sleep)
 global single_events
 single_events = sched.scheduler(time.time, time.sleep)
 
+# Dictionary containing COVID data information.
+global data
+data = []
+# List of news article structures as returned by newsapi.
+global news
+news = []
+
+news = []
+
 app = Flask(__name__,
 			static_folder="/home/sam/Coursework/ECM1400 Coursework/static",
 			template_folder="/home/sam/Coursework/ECM1400 Coursework/templates")
@@ -320,8 +329,35 @@ def do_repeat_event(scheduler: sched.scheduler,
 
 def schedule_covid_updates(update_interval: float,
 						   update_name: str,
-						   update_repeat: bool) -> sched.scheduler:
-	"""
+						   update_repeat: bool) -> None:
+	"""Handle the scheduling of covid data events. The spec has
+	led to a strange program architecture due to its demand for a
+	function specifically meant to be named this with the parameters
+	update_interval and update_name.
+
+	Parameters
+	----------
+	update_interval: float - The interval for the update.
+
+	update_name: str - The title of the update.
+
+	update_repeat: bool - Whether the update will repeat.
+
+	Returns
+	-------
+	None
+
+	Modifies global(s)
+	------------------
+	repeat_events: sched.scheduler - To schedule the event if it's a
+	repeating one.
+
+	single_events: sched.scheduler - To schedule the event if it's a
+	non-repeating one.
+
+	Modifies file(s)
+	----------------
+	None
 	"""
 	# TODO Customise arguments with config
 	global repeat_events
@@ -341,8 +377,34 @@ def schedule_covid_updates(update_interval: float,
 def update_news(update_interval: float,
 				update_name: str,
 				update_repeat: bool) -> None:
-	"""
-	TODO when function finished
+	"""Handle the scheduling of covid news events. The spec has
+	led to a strange program architecture due to its demand for a
+	function specifically meant to be named this with the parameters
+	update_interval and update_name.
+
+	Parameters
+	----------
+	update_interval: float - The interval for the update.
+
+	update_name: str - The title of the update.
+
+	update_repeat: bool - Whether the update will repeat.
+
+	Returns
+	-------
+	None
+
+	Modifies global(s)
+	------------------
+	repeat_events: sched.scheduler - To schedule the event if it's a
+	repeating one.
+
+	single_events: sched.scheduler - To schedule the event if it's a
+	non-repeating one.
+
+	Modifies file(s)
+	----------------
+	None
 	"""
 	# TODO Customise arguments with config
 	global repeat_events
@@ -360,10 +422,25 @@ def update_news(update_interval: float,
 							  (True, update_name))
 
 def schedule_update_event(update: Dict) -> None:
+	"""Decide on whether an event will be a news or data one and
+	call the appropriate scheduling function.
+
+	Parameters
+	----------
+	update: Dict - The update dictionary for this particular update.
+
+	Returns
+	-------
+	None
+
+	Modifies global(s)
+	------------------
+	None
+
+	Modifies file(s)
+	----------------
+	None
 	"""
-	"""
-	global repeat_events
-	global single_events
 	if update["data"]:
 		schedule_covid_updates(update["time_secs"],
 							   update["title"],
@@ -383,6 +460,10 @@ def execute_data_update(event_is_single: bool = False,
 		updates = [i for i in updates if i["title"] != single_update_name]
 		remove_update_from_file(single_update_name)
 
+	# TODO Customise arguments in config
+	global data
+	data = cdh.covid_API_request()
+
 	print("----\nDATA\n----")
 
 def execute_news_update(event_is_single: bool = False,
@@ -393,6 +474,14 @@ def execute_news_update(event_is_single: bool = False,
 	if event_is_single and single_update_name:
 		updates = [i for i in updates if i["title"] != single_update_name]
 		remove_update_from_file(single_update_name)
+
+	# TODO Customise arguments in config
+	global news
+	news = cnh.news_API_request()
+	# Delete news that has been removed by the user
+	with open("excluded_news.txt", "r") as f:
+		ex_news = [i[:-1] for i in f.readlines()]
+		news["articles"] = [i for i in news["articles"] if i["title"] not in ex_news]
 
 	print("----\nNEWS\n----")
 
@@ -405,6 +494,8 @@ def serve_index() -> "Response":
 
 	Parameters
 	----------
+	(GLOBAL) news: List[Dict]
+	(GLOBAL) updates: List[Dict]
 	prev_data: Dict - The previously requested & processed COVID
 	data. Provided if only news is updated, or neither are.
 
@@ -415,9 +506,8 @@ def serve_index() -> "Response":
 	global updates
 	global repeat_events
 	global single_events
-
-	# Data (temp)
-	data = cdh.covid_API_request()
+	global data
+	global news
 
 	# Handle an update addition request if there is one
 	is_new_update = False
@@ -486,29 +576,22 @@ def serve_index() -> "Response":
 	if article_to_remove:
 		with open("excluded_news.txt", "a") as f:
 			f.write(f"{article_to_remove}\n")
-
-	# News (temp)
-	news = cnh.news_API_request()
-
-	# Delete news that has been removed by the user
-	with open("excluded_news.txt", "r") as f:
-		ex_news = [i[:-1] for i in f.readlines()]
-		news["articles"] = [i for i in news["articles"] if i["title"] not in ex_news]
+		execute_news_update()
 
 
-	return render_template( \
-		"index.html", \
-		title="COVID-19 Dashboard", \
-		location=data["location"], \
-		local_7day_infections=data["local_7day_infections"], \
-		nation_location=data["nation_location"], \
+	return render_template(
+		"index.html",
+		title="COVID-19 Dashboard",
+		location=data["location"],
+		local_7day_infections=data["local_7day_infections"],
+		nation_location=data["nation_location"],
 		national_7day_infections=data["national_7day_infections"],
-		hospital_cases="Hospital cases: " + str(data["hospital_cases"]), \
-		deaths_total="Deaths total: " + str(data["deaths_total"]), \
+		hospital_cases="Hospital cases: " + str(data["hospital_cases"]),
+		deaths_total="Deaths total: " + str(data["deaths_total"]),
 		# Scheduled updates list (left)
-		updates=updates, \
+		updates=updates,
 		# News headlines list (right)
-		news_articles=news["articles"] \
+		news_articles=news["articles"]
 	)
 
 @app.before_first_request
@@ -522,6 +605,9 @@ def setup_event_queue() -> None:
 	load_updates_from_file()
 	for update in updates:
 		schedule_update_event(update)
+
+	execute_data_update()
+	execute_news_update()
 
 if __name__ == "__main__":
 	"""
