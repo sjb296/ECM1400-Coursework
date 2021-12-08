@@ -28,4 +28,6 @@ news:
     # DEFAULTS:
     #covid_terms: Covid COVID-19 coronavirus
     covid_terms: Covid COVID-19 coronavirus
-	api_key: SAMPLE
+    # The API key for the news api.
+    # Get one here: https://newsapi.org/
+    api_key: SAMPLE
