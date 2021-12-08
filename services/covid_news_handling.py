@@ -4,7 +4,8 @@ from flask import Markup
 import sched
 import time
 import datetime
-import json
+
+from load_config import CFG
 
 def update_news(update_name: str) -> None:
 	"""Dummy function for the automated tests. The real function is
@@ -12,8 +13,7 @@ def update_news(update_name: str) -> None:
 	"""
 	pass
 
-def news_API_request(covid_terms: str \
-						="Covid COVID-19 coronavirus") -> Dict:
+def news_API_request(covid_terms: str = CFG["news"]["covid_terms"]) -> Dict:
 	"""
 	Request today's news articles containing the words
 	in covid_terms, and return the result in a dictionary.

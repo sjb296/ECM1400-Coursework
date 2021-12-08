@@ -1,0 +1,31 @@
+data:
+    # The name of the LTLA (Lower Tier Local Authority)
+    # to draw data from. Change this to any valid LTLA.
+    # Valid LTLA values for LOCAL_LOC can be found here:
+    # https://data.gov.uk/dataset/adb48074-34f0-4304-8dc4-e294240ad630/lower-tier-local-authority-to-upper-tier-local-authority-december-2018-lookup-in-england-and-wales-v2
+    # DEFAULTS:
+    #local_loc: Exeter
+    #local_loc_type: ltla
+    local_loc: Exeter
+    local_loc_type: ltla
+    # The name of the nation (if NAT_LOC_TYPE == "nation")
+    # to draw data from.
+    # Valid values are "England", "Northern Ireland", "Scotland"
+    # and "Wales".
+    # However, for an overview of all UK nations, set
+    # nat_loc: ~
+    # nat_loc_type: overview
+    # DEFAULTS:
+    #nat_loc: England
+    #nat_loc_type: nation
+    nat_loc: England
+    nat_loc_type: nation
+news:
+    # The terms for which to filter news articles for the news display.
+    # They are applied on an "inclusive OR" basis for each word,
+    # meaning the default searches for articles containing the words
+    # "covid", "covid-19" or "coronavirus".
+    # DEFAULTS:
+    #covid_terms: Covid COVID-19 coronavirus
+    covid_terms: Covid COVID-19 coronavirus
+	api_key: SAMPLE

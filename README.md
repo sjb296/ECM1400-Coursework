@@ -30,8 +30,7 @@ The file services/updates.csv is NOT to be modified by anything but the app itse
 
 ### Configuration
 
-TODO
-Please use config.json to configure the program.
+Program configuration is done by modifying config.py. Please note that changing certain parameters to certain values can cause errors in the program (e.g. changing the COVID data API location related parametes can cause errors because not all types of location provide the type of data the UI displays.)
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

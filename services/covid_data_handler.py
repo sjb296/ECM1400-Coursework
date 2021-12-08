@@ -4,6 +4,9 @@ import json
 import sched
 import time
 
+# Load the config file
+from load_config import CFG
+
 def parse_csv_data(csv_filename: str) -> List[str]:
 	"""
 	Return a list of strings each containing a row of the csv.
@@ -82,8 +85,8 @@ def schedule_covid_updates(update_interval: float,
 	"""
 	pass
 
-def covid_API_request(location: str = "Exeter", \
-					  location_type: str = "ltla") -> Dict:
+def covid_API_request(location: str = CFG["data"]["local_loc"], \
+					  location_type: str = CFG["data"]["local_loc_type"]) -> Dict:
 	"""
 	Retrieve relevant COVID-19 information using the API and return
 	it in a dictionary.
@@ -111,6 +114,14 @@ def covid_API_request(location: str = "Exeter", \
 	- hospital_cases: int - The current number of national hospital cases.
 
 	- deaths_total: int - The total number of deaths in the UK.
+
+	Modifies global(s)
+	------------------
+	None
+
+	Modifies file(s)
+	----------------
+	None
 
 	"""
 	# Get local data

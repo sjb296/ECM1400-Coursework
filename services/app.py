@@ -11,6 +11,7 @@ import time
 # Local modules
 import covid_data_handler as cdh
 import covid_news_handling as cnh
+# !Load the config file!
 
 # List of update structures to render to the UI.
 #An update entry looks like this:
@@ -565,11 +566,13 @@ def serve_index() -> "Response":
 		updates = [i for i in updates if i["title"] != update_to_remove]
 		setup_event_queue()
 
-	print(updates)
-	print(len(repeat_events.queue))
+	#print(updates)
+	#print(len(repeat_events.queue))
 	print(repeat_events.run(blocking=False))
-	print(len(single_events.queue))
+	#print(len(single_events.queue))
 	print(single_events.run(blocking=False))
+
+	# TODO Log it as a warning if there's no scheduled data/news updates
 
 	# Handle a news article removal request if there is one
 	article_to_remove = request.args.get("notif")
@@ -608,6 +611,7 @@ def setup_event_queue() -> None:
 
 	execute_data_update()
 	execute_news_update()
+
 
 if __name__ == "__main__":
 	"""
