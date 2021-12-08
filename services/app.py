@@ -12,6 +12,7 @@ import time
 import covid_data_handler as cdh
 import covid_news_handling as cnh
 # !Load the config file!
+from load_config import CFG
 
 # List of update structures to render to the UI.
 #An update entry looks like this:
@@ -187,7 +188,7 @@ def load_updates_from_file() -> None:
 	updates = []
 	[updates.append(i) for i in tmp if i not in updates]
 	#print(updates_csv)
-	print(updates)
+	#print(updates)
 
 def add_update(update: Dict) -> None:
 	"""Adds an update to the updates file from an update dictionary.
@@ -211,13 +212,13 @@ def add_update(update: Dict) -> None:
 	with open("updates.csv", "r") as f:
 		update_rows = f.readlines()
 		update_csv = [i.split("¬") for i in update_rows]
-		print(update_rows)
+		#print(update_rows)
 	with open("updates.csv", "a+") as f:
 		line = f"{update['time']}¬{update['title']}¬" + \
 			   f"{update['repeat']}¬{update['data']}¬{update['news']}\n"
-		print([i[1] for i in update_csv])
+		#print([i[1] for i in update_csv])
 		if update["title"] not in [i[1] for i in update_csv]:
-			print(f"{update['title']} -- {[i[1] for i in update_csv]}")
+			#print(f"{update['title']} -- {[i[1] for i in update_csv]}")
 			f.write(line)
 			return True
 		else:
@@ -360,7 +361,6 @@ def schedule_covid_updates(update_interval: float,
 	----------------
 	None
 	"""
-	# TODO Customise arguments with config
 	global repeat_events
 	global single_events
 	if update_repeat:
@@ -407,7 +407,6 @@ def update_news(update_interval: float,
 	----------------
 	None
 	"""
-	# TODO Customise arguments with config
 	global repeat_events
 	global single_events
 	if update_repeat:
@@ -461,7 +460,6 @@ def execute_data_update(event_is_single: bool = False,
 		updates = [i for i in updates if i["title"] != single_update_name]
 		remove_update_from_file(single_update_name)
 
-	# TODO Customise arguments in config
 	global data
 	data = cdh.covid_API_request()
 
@@ -476,7 +474,6 @@ def execute_news_update(event_is_single: bool = False,
 		updates = [i for i in updates if i["title"] != single_update_name]
 		remove_update_from_file(single_update_name)
 
-	# TODO Customise arguments in config
 	global news
 	news = cnh.news_API_request()
 	# Delete news that has been removed by the user
@@ -523,7 +520,7 @@ def serve_index() -> "Response":
 		is_new_update = True
 
 	if is_new_update:
-		print("NEW UPDATE")
+		#print("NEW UPDATE")
 		is_new_update = True
 		new_update = dict()
 		new_update["time"]  = request.args.get("update")

@@ -1,8 +1,10 @@
 from typing import List, Dict, Tuple
 from uk_covid19 import Cov19API
+from flask import Markup
 import json
 import sched
 import time
+import logging
 
 # Load the config file
 from load_config import CFG
@@ -18,6 +20,14 @@ def parse_csv_data(csv_filename: str) -> List[str]:
 	Returns
 	----------
 	A list of strings where each string is a row of the csv.
+
+	Modifies global(s)
+	------------------
+	None
+
+	Modifies file(s)
+	----------------
+	None
 	"""
 	with open(csv_filename, "r") as csv:
 		return [i.strip("\n") for i in csv.readlines()]
@@ -39,6 +49,14 @@ def process_covid_csv_data(covid_csv_data: List[str]) -> Tuple[int]:
 	 - The total number of infections in the last 7 days
 	 - The current hospital cases
 	 - The cumulative number of deaths
+
+	Modifies global(s)
+	------------------
+	None
+
+	Modifies file(s)
+	----------------
+	None
 	"""
 	header = covid_csv_data[0].split(",")
 	metrics = header[4:]
@@ -60,8 +78,6 @@ def process_covid_csv_data(covid_csv_data: List[str]) -> Tuple[int]:
 		if cnt < cnt_lim:
 			local_7day_infections += int(body[cnt][6])
 		cnt += 1
-
-	#local_7day_infections = sum([int(i[6]) for i in body[2:9]])
 
 	# Retrieve the current number of hospital cases.
 	if body[0][5]:
@@ -122,7 +138,6 @@ def covid_API_request(location: str = CFG["data"]["local_loc"], \
 	Modifies file(s)
 	----------------
 	None
-
 	"""
 	# Get local data
 	local_filters = [
@@ -141,9 +156,17 @@ def covid_API_request(location: str = CFG["data"]["local_loc"], \
 	# Process local data
 	try:
 		local_csv_data = local_api.get_csv()
-	except SSLError:
-		# TODO: Handle SSLError - Connection related!
-		pass
+	except Exception as e:
+		# TODO: Handle SSLError - Connection related! LOG IT
+		print(e)
+		return {
+			"location": CFG["data"]["local_loc"],
+			"local_7day_infections": 0,
+			"nation_location": CFG["data"]["nat_loc"],
+			"national_7day_infections": 0,
+			"hospital_cases": 0,
+			"deaths_total": 0
+		}
 
 	local_body = [i.split(",") for i in local_csv_data.split("\n")[1:-1]]
 

@@ -4,6 +4,7 @@ from flask import Markup
 import sched
 import time
 import datetime
+import logging
 
 from load_config import CFG
 
@@ -21,16 +22,30 @@ def news_API_request(covid_terms: str = CFG["news"]["covid_terms"]) -> Dict:
 	Parameters
 	----------
 	covid_terms: str - The terms with which to query the API.
+
+	Returns
+	-------
+	news: Dict - A dictionary containing the results of the request to the
+	news API.
 	"""
-	with open("newsapikey", "r") as f:
-		api_key = f.readlines()[0][:-1]
-		api = NewsApiClient(api_key=api_key)
+	api_key = CFG["news"]["api_key"]
+	api = NewsApiClient(api_key=api_key)
 
 	searches_list = []
 	covid_terms_arr = covid_terms.split(" ")
 
-	for i in covid_terms_arr:
-		searches_list.append(dict(api.get_top_headlines(q=i)))
+	try:
+		for i in covid_terms_arr:
+			searches_list.append(dict(api.get_top_headlines(q=i)))
+	except Exception as e:
+		print(e)
+		return {"articles": [
+			{
+				"title": Markup("<span style='color:red;font-size:32pt'>"
+								+ "Error: No connection!</span>"),
+			 	"content": ""
+			}
+		]}
 
 	all_ok = True
 	status = "ok"
