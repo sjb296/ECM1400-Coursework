@@ -1,0 +1,587 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Welcome to ECM1400 Covid Dashboard’s documentation! &#8212; ECM1400 Covid Dashboard  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-app">
+<span id="welcome-to-ecm1400-covid-dashboard-s-documentation"></span><h1>Welcome to ECM1400 Covid Dashboard’s documentation!<a class="headerlink" href="#module-app" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="app.add_update">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">add_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#app.add_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds an update to the updates file from an update dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>update</strong> – Dict - An update dictionary (see the updates global)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Modifies global(s):</dt><dd><p>None</p>
+</dd>
+<dt>Modified file(s):</dt><dd><p>updates.csv</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.do_repeat_event">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">do_repeat_event</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scheduler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sched.scheduler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actionargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#app.do_repeat_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Carry out the event scheduled by schedule_repeat_event and
+reschedule the same event so it repeats.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scheduler</strong> – sched.scheduler - The scheduler on which to place the</p></li>
+<li><p><strong>event.</strong> – </p></li>
+<li><p><strong>interval</strong> – float - The interval of the event.</p></li>
+<li><p><strong>action</strong> – Callable - The event’s callback function.</p></li>
+<li><p><strong>actionargs</strong> – Tuple = () - The event’s callback’s arguments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Modifies global(s):</dt><dd><p>repeat_events: sched.scheduler - When passed in to
+schedule_repeat_event.</p>
+</dd>
+<dt>Modifies file(s):</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.execute_data_update">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">execute_data_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_is_single</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_update_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#app.execute_data_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute a data update: fill data with data from the API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event_is_single</strong> – bool - Whether the event is non-repeating, so that</p></li>
+<li><p><strong>is</strong> (<em>it can be removed from updates if it</em>) – </p></li>
+<li><p><strong>single_update_name</strong> – str - The name of the single update if it’s single,</p></li>
+<li><p><strong>updates</strong> (<em>so it can be removed from</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Modifies global(s):</dt><dd><p>data: Dict - Populates the structure with the latest COVID data.</p>
+</dd>
+<dt>Modifies file(s):</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.execute_news_update">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">execute_news_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_is_single</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_update_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#app.execute_news_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute a news update: fill news with news articles from the API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event_is_single</strong> – bool - Whether the event is non-repeating, so that</p></li>
+<li><p><strong>is</strong> (<em>it can be removed from updates if it</em>) – </p></li>
+<li><p><strong>single_update_name</strong> – str - The name of the single update if it’s single,</p></li>
+<li><p><strong>updates</strong> (<em>so it can be removed from</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Modifies global(s):</dt><dd><p>news: List[Dict] - Populates the structure with the latest news headlines.</p>
+</dd>
+<dt>Modifies file(s):</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.load_updates_from_file">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">load_updates_from_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#app.load_updates_from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads update entries from the updates file for use by the server
+at runtime.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Modifies global(s):</dt><dd><p>updates: List[Dict] - The list of update entries in dictionary form</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.remove_update_from_file">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">remove_update_from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">update_item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#app.remove_update_from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a particular update entry from the updates file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>update_item</strong> – str: The title of the update to remove</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Modifies file(s):</dt><dd><p>updates.csv</p>
+</dd>
+<dt>Modifies global(s):</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.schedule_covid_updates">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">schedule_covid_updates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">update_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_repeat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#app.schedule_covid_updates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle the scheduling of covid data events. The spec has
+led to a strange program architecture due to its demand for a
+function specifically meant to be named this with the parameters
+update_interval and update_name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>update_interval</strong> – float - The interval for the update.</p></li>
+<li><p><strong>update_name</strong> – str - The title of the update.</p></li>
+<li><p><strong>update_repeat</strong> – bool - Whether the update will repeat.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl>
+<dt>Modifies global(s):</dt><dd><p>repeat_events: sched.scheduler - To schedule the event if it’s a
+repeating one.</p>
+<p>single_events: sched.scheduler - To schedule the event if it’s a
+non-repeating one.</p>
+</dd>
+<dt>Modifies file(s):</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.schedule_repeat_event">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">schedule_repeat_event</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scheduler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sched.scheduler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actionargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#app.schedule_repeat_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Schedule a repeating event onto the given queue.</p>
+<dl>
+<dt>Parameters</dt><dd><p>scheduler: sched.scheduler - The scheduler on which to place the
+event.</p>
+<p>interval: float - The interval of the event.</p>
+<p>action: Callable - The event’s callback function.</p>
+<p>actionargs: Tuple = () - The event’s callback’s arguments.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Modifies global(s):</dt><dd><p>repeat_events: sched.scheduler - When passed in</p>
+</dd>
+<dt>Modifies file(s):</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.schedule_single_event">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">schedule_single_event</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">update_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sched.scheduler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actionargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#app.schedule_single_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Schedule a single (i.e. non-repeating) event on the given queue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>update_name</strong> – str - The title of the update.</p></li>
+<li><p><strong>scheduler</strong> – sched.scheduler - The scheduler on which to place the</p></li>
+<li><p><strong>event.</strong> – </p></li>
+<li><p><strong>interval</strong> – float - The interval of the event.</p></li>
+<li><p><strong>action</strong> – Callable - The event’s callback function.</p></li>
+<li><p><strong>actionargs</strong> – Tuple = () - The event’s callback’s arguments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl>
+<dt>Modifies global(s):</dt><dd><p>single_events: sched.scheduler - When passed in.</p>
+<p>updates: List[Dict] - By removing the update executed from
+the updates dictionary because it’s finished.</p>
+</dd>
+<dt>Modifies file(s):</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.schedule_update_event">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">schedule_update_event</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#app.schedule_update_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decide on whether an event will be a news or data one and
+call the appropriate scheduling function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>update</strong> – Dict - The update dictionary for this particular update.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Modifies global(s):</dt><dd><p>None</p>
+</dd>
+<dt>Modifies file(s):</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.serve_bootstrap_css">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">serve_bootstrap_css</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Response</span></span></span><a class="headerlink" href="#app.serve_bootstrap_css" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serve bootstrap.css.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.serve_bootstrap_js">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">serve_bootstrap_js</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Response</span></span></span><a class="headerlink" href="#app.serve_bootstrap_js" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serve bootstrap.js.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.serve_image_html">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">serve_image_html</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Response</span></span></span><a class="headerlink" href="#app.serve_image_html" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serve %20image.html.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.serve_index">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">serve_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Response</span></span></span><a class="headerlink" href="#app.serve_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acquire the necessary data and render the dashboard template
+(the homepage).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A response containing the dashboard page produced by render_template.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Modifies global(s):</dt><dd><p>updates: List[Dict]
+repeat_events: sched.scheduler
+single_events: sched.scheduler
+data: Dict
+news: List[Dict]</p>
+</dd>
+<dt>Modifies file(s):</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.serve_jquery_3_js">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">serve_jquery_3_js</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Response</span></span></span><a class="headerlink" href="#app.serve_jquery_3_js" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serve jquery-3.js.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.serve_popper_js">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">serve_popper_js</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Response</span></span></span><a class="headerlink" href="#app.serve_popper_js" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serve popper.js.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.setup_event_queue">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">setup_event_queue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#app.setup_event_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise the event queue with the updates stored in updates.csv.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Modifies global(s):</dt><dd><p>repeat_events: sched.scheduler - Adds the stored update events to the queue.
+single_events: sched.scheduler - Adds the stored update events to the queue.</p>
+</dd>
+<dt>Modifies file(s):</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.update_news">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">update_news</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">update_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_repeat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#app.update_news" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle the scheduling of covid news events. The spec has
+led to a strange program architecture due to its demand for a
+function specifically meant to be named this with the parameters
+update_interval and update_name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>update_interval</strong> – float - The interval for the update.</p></li>
+<li><p><strong>update_name</strong> – str - The title of the update.</p></li>
+<li><p><strong>update_repeat</strong> – bool - Whether the update will repeat.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl>
+<dt>Modifies global(s):</dt><dd><p>repeat_events: sched.scheduler - To schedule the event if it’s a
+repeating one.</p>
+<p>single_events: sched.scheduler - To schedule the event if it’s a
+non-repeating one.</p>
+</dd>
+<dt>Modifies file(s):</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-covid_data_handler"></span><dl class="py function">
+<dt class="sig sig-object py" id="covid_data_handler.covid_API_request">
+<span class="sig-prename descclassname"><span class="pre">covid_data_handler.</span></span><span class="sig-name descname"><span class="pre">covid_API_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Exeter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ltla'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#covid_data_handler.covid_API_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve relevant COVID-19 information using the API and return
+it in a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>location</strong> – str - The location to retrieve data for</p></li>
+<li><p><strong>location_type</strong> – str - The type of area to retrieve data for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>A dictionary containing</p>
+<ul class="simple">
+<li><p>location: str - The location for which the local data is requested.</p></li>
+<li><p>local_7day_infections: int - The total local infections in the last 7</p></li>
+</ul>
+<p>days.</p>
+<ul class="simple">
+<li><p>nation_location: str - The name of the “nation” for which the national</p></li>
+</ul>
+<p>data is requested</p>
+<ul class="simple">
+<li><p>national_7day_infections: int - The total national infections in the last 7</p></li>
+</ul>
+<p>days.</p>
+<ul class="simple">
+<li><p>hospital_cases: int - The current number of national hospital cases.</p></li>
+<li><p>deaths_total: int - The total number of deaths in the UK.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Modifies global(s):</dt><dd><p>None</p>
+</dd>
+<dt>Modifies file(s):</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="covid_data_handler.parse_csv_data">
+<span class="sig-prename descclassname"><span class="pre">covid_data_handler.</span></span><span class="sig-name descname"><span class="pre">parse_csv_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#covid_data_handler.parse_csv_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of strings each containing a row of the csv.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>csv_filename</strong> – str - The name of the csv to read from.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of strings where each string is a row of the csv.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Modifies global(s):</dt><dd><p>None</p>
+</dd>
+<dt>Modifies file(s):</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="covid_data_handler.process_covid_csv_data">
+<span class="sig-prename descclassname"><span class="pre">covid_data_handler.</span></span><span class="sig-name descname"><span class="pre">process_covid_csv_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">covid_csv_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#covid_data_handler.process_covid_csv_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the total COVID cases in the last 7 days, the current number of
+hospital cases, and the total deaths, given a list of rows of a csv
+in specification format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>covid_csv_data</strong> – List[str] - A list of rows of a csv in specification</p></li>
+<li><p><strong>format.</strong> (<em>COVID data</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>A tuple containing</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The total number of infections in the last 7 days</p></li>
+<li><p>The current hospital cases</p></li>
+<li><p>The cumulative number of deaths</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Modifies global(s):</dt><dd><p>None</p>
+</dd>
+<dt>Modifies file(s):</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="covid_data_handler.schedule_covid_updates">
+<span class="sig-prename descclassname"><span class="pre">covid_data_handler.</span></span><span class="sig-name descname"><span class="pre">schedule_covid_updates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">update_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#covid_data_handler.schedule_covid_updates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dummy function for the automated tests. The real function
+is in app.py.</p>
+</dd></dl>
+
+<span class="target" id="module-covid_news_handling"></span><dl class="py function">
+<dt class="sig sig-object py" id="covid_news_handling.news_API_request">
+<span class="sig-prename descclassname"><span class="pre">covid_news_handling.</span></span><span class="sig-name descname"><span class="pre">news_API_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">covid_terms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Covid</span> <span class="pre">COVID-19</span> <span class="pre">coronavirus'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#covid_news_handling.news_API_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request today’s news articles containing the words
+in covid_terms, and return the result in a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>covid_terms</strong> – str - The terms with which to query the API.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dict - A dictionary containing the results of the request to the
+news API.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>news</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="covid_news_handling.update_news">
+<span class="sig-prename descclassname"><span class="pre">covid_news_handling.</span></span><span class="sig-name descname"><span class="pre">update_news</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">update_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#covid_news_handling.update_news" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dummy function for the automated tests. The real function is
+in app.py.</p>
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">ECM1400 Covid Dashboard</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Sam Barker.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

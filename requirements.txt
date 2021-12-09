@@ -2,5 +2,7 @@ Flask==2.0.2
 MarkupSafe==2.0.1
 newsapi==0.1.1
 newsapi_python==0.2.6
+pytest==6.2.5
 PyYAML==6.0
+testfixtures==6.18.3
 uk_covid19==1.2.2

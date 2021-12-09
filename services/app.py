@@ -8,10 +8,10 @@ from datetime import datetime
 from markupsafe import escape
 import sched
 import time
+
 # Local modules
 import covid_data_handler as cdh
 import covid_news_handling as cnh
-# !Load the config file!
 from load_config import CFG
 # Load the logger
 from load_logger import logging
@@ -89,17 +89,17 @@ def serve_favicon() -> "Response":
 def remove_update_from_file(update_item: str) -> None:
 	"""Remove a particular update entry from the updates file.
 
-	Parameters
-	----------
-	update_item: str - The title of the update to remove
+	Parameters:
+		update_item: str: The title of the update to remove
 
-	Returns
-	-------
-	None
+	Returns:
+		None
 
-	Modifies file(s)
-	----------------
-	updates.csv
+	Modifies file(s):
+		updates.csv
+
+	Modifies global(s):
+		None
 	"""
 	f = open("updates.csv", "r")
 	# Read in and remove entry
@@ -123,17 +123,14 @@ def load_updates_from_file() -> None:
 	"""Loads update entries from the updates file for use by the server
 	at runtime.
 
-	Parameters
-	----------
-	None
+	Parameters:
+		None
 
-	Returns
-	-------
-	None
+	Returns:
+		None
 
-	Modifies global(s)
-	------------------
-	updates: List[Dict] - The list of update entries in dictionary form
+	Modifies global(s):
+		updates: List[Dict] - The list of update entries in dictionary form
 	"""
 
 	global updates
@@ -147,6 +144,8 @@ def load_updates_from_file() -> None:
 
 	# TODO: Dismantle this when implementing logging
 	# TODO: Check time format is valid
+
+
 	updates_csv = [i for i in updates_csv if len(i) == 5 \
 										  and i[0] != "00:00" \
 										  and i[1] \
@@ -184,6 +183,7 @@ def load_updates_from_file() -> None:
 		t = datetime.strptime(current_update["time"], "%H:%M")
 		current_update["time_secs"] = t.second + t.minute*60 + t.hour*3600
 
+	# Remove duplicates
 	tmp = updates
 	updates = []
 	[updates.append(i) for i in tmp if i not in updates]
@@ -193,21 +193,17 @@ def load_updates_from_file() -> None:
 def add_update(update: Dict) -> None:
 	"""Adds an update to the updates file from an update dictionary.
 
-	Parameters
-	----------
-	update: Dict - An update dictionary (see the updates global)
+	Parameters:
+		update: Dict - An update dictionary (see the updates global)
 
-	Returns
-	-------
-	None
+	Returns:
+		None
 
-	Modifies global(s)
-	------------------
-	None
+	Modifies global(s):
+		None
 
-	Modified file(s)
-	----------------
-	updates.csv
+	Modified file(s):
+		updates.csv
 	"""
 	with open("updates.csv", "r") as f:
 		update_rows = f.readlines()
@@ -229,33 +225,29 @@ def schedule_single_event(update_name: str,
 						  actionargs: Tuple = ()) -> None:
 	"""Schedule a single (i.e. non-repeating) event on the given queue.
 
-	Parameters
-	----------
-	update_name: str - The title of the update.
+	Parameters:
+		update_name: str - The title of the update.
 
-	scheduler: sched.scheduler - The scheduler on which to place the
-	event.
+		scheduler: sched.scheduler - The scheduler on which to place the
+		event.
 
-	interval: float - The interval of the event.
+		interval: float - The interval of the event.
 
-	action: Callable - The event's callback function.
+		action: Callable - The event's callback function.
 
-	actionargs: Tuple = () - The event's callback's arguments.
+		actionargs: Tuple = () - The event's callback's arguments.
 
-	Returns
-	-------
-	None
+	Returns:
+		None
 
-	Modifies global(s)
-	------------------
-	single_events: sched.scheduler - When passed in.
+	Modifies global(s):
+		single_events: sched.scheduler - When passed in.
 
-	updates: List[Dict] - By removing the update executed from
-	the updates dictionary because it's finished.
+		updates: List[Dict] - By removing the update executed from
+		the updates dictionary because it's finished.
 
-	Mofifies file(s)
-	----------------
-	None
+	Modifies file(s):
+		None
 	"""
 	scheduler.enter(interval, 1, action, actionargs)
 	remove_update_from_file(update_name)
@@ -267,27 +259,23 @@ def schedule_repeat_event(scheduler: sched.scheduler,
 	"""Schedule a repeating event onto the given queue.
 
 	Parameters
-	----------
-	scheduler: sched.scheduler - The scheduler on which to place the
-	event.
+		scheduler: sched.scheduler - The scheduler on which to place the
+		event.
 
-	interval: float - The interval of the event.
+		interval: float - The interval of the event.
 
-	action: Callable - The event's callback function.
+		action: Callable - The event's callback function.
 
-	actionargs: Tuple = () - The event's callback's arguments.
+		actionargs: Tuple = () - The event's callback's arguments.
 
-	Returns
-	-------
-	None
+	Returns:
+		None
 
-	Modifies global(s)
-	------------------
-	repeat_events: sched.scheduler - When passed in
+	Modifies global(s):
+		repeat_events: sched.scheduler - When passed in
 
-	Modifies file(s)
-	----------------
-	None
+	Modifies file(s):
+		None
 	"""
 	scheduler.enter(interval, 1, do_repeat_event,
 					(scheduler, interval, action, actionargs))
@@ -299,29 +287,25 @@ def do_repeat_event(scheduler: sched.scheduler,
 	"""Carry out the event scheduled by schedule_repeat_event and
 	reschedule the same event so it repeats.
 
-	Parameters
-	----------
-	scheduler: sched.scheduler - The scheduler on which to place the
-	event.
+	Parameters:
+		scheduler: sched.scheduler - The scheduler on which to place the
+		event.
 
-	interval: float - The interval of the event.
+		interval: float - The interval of the event.
 
-	action: Callable - The event's callback function.
+		action: Callable - The event's callback function.
 
-	actionargs: Tuple = () - The event's callback's arguments.
+		actionargs: Tuple = () - The event's callback's arguments.
 
-	Returns
-	-------
-	None
+	Returns:
+		None
 
-	Modifies global(s)
-	------------------
-	repeat_events: sched.scheduler - When passed in to
-	schedule_repeat_event.
+	Modifies global(s):
+		repeat_events: sched.scheduler - When passed in to
+		schedule_repeat_event.
 
-	Modifies file(s)
-	----------------
-	None
+	Modifies file(s):
+		None
 	"""
 	action(*actionargs)
 	scheduler.enter(interval, 1, do_repeat_event,
@@ -335,29 +319,25 @@ def schedule_covid_updates(update_interval: float,
 	function specifically meant to be named this with the parameters
 	update_interval and update_name.
 
-	Parameters
-	----------
-	update_interval: float - The interval for the update.
+	Parameters:
+		update_interval: float - The interval for the update.
 
-	update_name: str - The title of the update.
+		update_name: str - The title of the update.
 
-	update_repeat: bool - Whether the update will repeat.
+		update_repeat: bool - Whether the update will repeat.
 
-	Returns
-	-------
-	None
+	Returns:
+		None
 
-	Modifies global(s)
-	------------------
-	repeat_events: sched.scheduler - To schedule the event if it's a
-	repeating one.
+	Modifies global(s):
+		repeat_events: sched.scheduler - To schedule the event if it's a
+		repeating one.
 
-	single_events: sched.scheduler - To schedule the event if it's a
-	non-repeating one.
+		single_events: sched.scheduler - To schedule the event if it's a
+		non-repeating one.
 
-	Modifies file(s)
-	----------------
-	None
+	Modifies file(s):
+		None
 	"""
 	global repeat_events
 	global single_events
@@ -381,29 +361,25 @@ def update_news(update_interval: float,
 	function specifically meant to be named this with the parameters
 	update_interval and update_name.
 
-	Parameters
-	----------
-	update_interval: float - The interval for the update.
+	Parameters:
+		update_interval: float - The interval for the update.
 
-	update_name: str - The title of the update.
+		update_name: str - The title of the update.
 
-	update_repeat: bool - Whether the update will repeat.
+		update_repeat: bool - Whether the update will repeat.
 
-	Returns
-	-------
-	None
+	Returns:
+		None
 
-	Modifies global(s)
-	------------------
-	repeat_events: sched.scheduler - To schedule the event if it's a
-	repeating one.
+	Modifies global(s):
+		repeat_events: sched.scheduler - To schedule the event if it's a
+		repeating one.
 
-	single_events: sched.scheduler - To schedule the event if it's a
-	non-repeating one.
+		single_events: sched.scheduler - To schedule the event if it's a
+		non-repeating one.
 
-	Modifies file(s)
-	----------------
-	None
+	Modifies file(s):
+		None
 	"""
 	global repeat_events
 	global single_events
@@ -423,21 +399,17 @@ def schedule_update_event(update: Dict) -> None:
 	"""Decide on whether an event will be a news or data one and
 	call the appropriate scheduling function.
 
-	Parameters
-	----------
-	update: Dict - The update dictionary for this particular update.
+	Parameters:
+		update: Dict - The update dictionary for this particular update.
 
-	Returns
-	-------
-	None
+	Returns:
+		None
 
-	Modifies global(s)
-	------------------
-	None
+	Modifies global(s):
+		None
 
-	Modifies file(s)
-	----------------
-	None
+	Modifies file(s):
+		None
 	"""
 	if update["data"]:
 		schedule_covid_updates(update["time_secs"],
@@ -451,7 +423,23 @@ def schedule_update_event(update: Dict) -> None:
 
 def execute_data_update(event_is_single: bool = False,
 						single_update_name: str = "") -> None:
-	"""
+	"""Execute a data update: fill data with data from the API.
+
+	Parameters:
+		event_is_single: bool - Whether the event is non-repeating, so that
+		it can be removed from updates if it is
+
+		single_update_name: str - The name of the single update if it's single,
+		so it can be removed from updates
+
+	Returns:
+		None
+
+	Modifies global(s):
+		data: Dict - Populates the structure with the latest COVID data.
+
+	Modifies file(s):
+		None
 	"""
 	global updates
 	if event_is_single and single_update_name:
@@ -465,7 +453,23 @@ def execute_data_update(event_is_single: bool = False,
 
 def execute_news_update(event_is_single: bool = False,
 						single_update_name: str = "") -> None:
-	"""
+	"""Execute a news update: fill news with news articles from the API.
+
+	Parameters:
+		event_is_single: bool - Whether the event is non-repeating, so that
+		it can be removed from updates if it is
+
+		single_update_name: str - The name of the single update if it's single,
+		so it can be removed from updates
+
+	Returns:
+		None
+
+	Modifies global(s):
+		news: List[Dict] - Populates the structure with the latest news headlines.
+
+	Modifies file(s):
+		None
 	"""
 	global updates
 	if event_is_single and single_update_name:
@@ -488,15 +492,21 @@ def serve_index() -> "Response":
 	Acquire the necessary data and render the dashboard template
 	(the homepage).
 
-	Parameters
-	----------
-	(GLOBAL) news: List[Dict]
-	(GLOBAL) updates: List[Dict]
-	prev_data: Dict - The previously requested & processed COVID
-	data. Provided if only news is updated, or neither are.
+	Parameters:
+		None
 
-	prev_news: Dict - The previously requested & processed news
-	data. Provided if only data is updated, or neither are.
+	Returns:
+		A response containing the dashboard page produced by render_template.
+
+	Modifies global(s):
+		updates: List[Dict]
+		repeat_events: sched.scheduler
+		single_events: sched.scheduler
+		data: Dict
+		news: List[Dict]
+
+	Modifies file(s):
+		None
 	"""
 
 	global updates
@@ -594,7 +604,20 @@ def serve_index() -> "Response":
 
 @app.before_first_request
 def setup_event_queue() -> None:
-	"""
+	"""Initialise the event queue with the updates stored in updates.csv.
+
+	Parameters:
+		None
+
+	Returns:
+		None
+
+	Modifies global(s):
+		repeat_events: sched.scheduler - Adds the stored update events to the queue.
+		single_events: sched.scheduler - Adds the stored update events to the queue.
+
+	Modifies file(s):
+		None
 	"""
 	global repeat_events
 	global single_events

@@ -5,8 +5,8 @@ import sched
 import time
 import datetime
 
-from load_config import CFG
 from load_logger import logging
+from load_config import CFG
 
 def update_news(update_name: str) -> None:
 	"""Dummy function for the automated tests. The real function is
@@ -19,14 +19,12 @@ def news_API_request(covid_terms: str = CFG["news"]["covid_terms"]) -> Dict:
 	Request today's news articles containing the words
 	in covid_terms, and return the result in a dictionary.
 
-	Parameters
-	----------
-	covid_terms: str - The terms with which to query the API.
+	Parameters:
+		covid_terms: str - The terms with which to query the API.
 
-	Returns
-	-------
-	news: Dict - A dictionary containing the results of the request to the
-	news API.
+	Returns:
+		news: Dict - A dictionary containing the results of the request to the
+		news API.
 	"""
 	api_key = CFG["news"]["api_key"]
 	api = NewsApiClient(api_key=api_key)

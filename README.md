@@ -32,7 +32,13 @@ The file services/updates.csv is NOT to be modified by anything but the app itse
 
 Program configuration is done by modifying config.yml. Please note that changing certain parameters to certain values can cause errors in the program (e.g. changing the COVID data API location related parametes can cause errors because not all types of location provide the type of data the UI displays.)
 
+To apply configuration changes, restart the server.
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
+
+## Additional documentation
+
+Additional (autodoc-generated) documentation can be found in docs/\_build/html.
