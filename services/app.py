@@ -499,11 +499,7 @@ def serve_index() -> "Response":
 		A response containing the dashboard page produced by render_template.
 
 	Modifies global(s):
-		updates: List[Dict]
-		repeat_events: sched.scheduler
-		single_events: sched.scheduler
-		data: Dict
-		news: List[Dict]
+		None
 
 	Modifies file(s):
 		None
