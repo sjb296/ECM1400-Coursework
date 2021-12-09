@@ -4,10 +4,10 @@ from flask import Markup
 import json
 import sched
 import time
-import logging
 
 # Load the config file
 from load_config import CFG
+from load_logger import logging
 
 def parse_csv_data(csv_filename: str) -> List[str]:
 	"""
@@ -158,7 +158,7 @@ def covid_API_request(location: str = CFG["data"]["local_loc"], \
 		local_csv_data = local_api.get_csv()
 	except Exception as e:
 		# TODO: Handle SSLError - Connection related! LOG IT
-		print(e)
+		logging.error(e)
 		return {
 			"location": CFG["data"]["local_loc"],
 			"local_7day_infections": 0,

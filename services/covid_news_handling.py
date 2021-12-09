@@ -4,9 +4,9 @@ from flask import Markup
 import sched
 import time
 import datetime
-import logging
 
 from load_config import CFG
+from load_logger import logging
 
 def update_news(update_name: str) -> None:
 	"""Dummy function for the automated tests. The real function is
@@ -38,7 +38,7 @@ def news_API_request(covid_terms: str = CFG["news"]["covid_terms"]) -> Dict:
 		for i in covid_terms_arr:
 			searches_list.append(dict(api.get_top_headlines(q=i)))
 	except Exception as e:
-		print(e)
+		logging.error(e)
 		return {"articles": [
 			{
 				"title": Markup("<span style='color:red;font-size:32pt'>"
@@ -51,7 +51,7 @@ def news_API_request(covid_terms: str = CFG["news"]["covid_terms"]) -> Dict:
 	status = "ok"
 	for i in searches_list:
 		if i["status"] != "ok":
-			print(f"NEWS API STATUS {i['status']}")
+			logging.warning(f"Article status not OK: {i['status']}")
 			status = i["status"]
 
 	total_results = sum([i["totalResults"] for i in searches_list])
@@ -66,12 +66,13 @@ def news_API_request(covid_terms: str = CFG["news"]["covid_terms"]) -> Dict:
 
 	# Add a hyperlink and fix articles with no text content.
 	for i in articles:
-		tmp = i["title"]
-		i["title"] = Markup(f"<a href='{i['url']}'>{tmp}</a>")
 		if i["content"] == None:
+			logging.warning(f"Article with no text preview found: {i['title']}")
 			i["content"] = "No text preview found!"
 		else:
 			i["content"] = Markup(i["content"])
+		tmp = i["title"]
+		i["title"] = Markup(f"<a href='{i['url']}'>{tmp}</a>")
 
 	news = {
 		"status": status,

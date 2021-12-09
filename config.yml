@@ -3,6 +3,7 @@ data:
     # to draw data from. Change this to any valid LTLA.
     # Valid LTLA values for LOCAL_LOC can be found here:
     # https://data.gov.uk/dataset/adb48074-34f0-4304-8dc4-e294240ad630/lower-tier-local-authority-to-upper-tier-local-authority-december-2018-lookup-in-england-and-wales-v2
+
     # DEFAULTS:
     #local_loc: Exeter
     #local_loc_type: ltla
@@ -15,6 +16,7 @@ data:
     # However, for an overview of all UK nations, set
     # nat_loc: ~
     # nat_loc_type: overview
+
     # DEFAULTS:
     #nat_loc: England
     #nat_loc_type: nation
@@ -25,9 +27,26 @@ news:
     # They are applied on an "inclusive OR" basis for each word,
     # meaning the default searches for articles containing the words
     # "covid", "covid-19" or "coronavirus".
+
     # DEFAULTS:
     #covid_terms: Covid COVID-19 coronavirus
     covid_terms: Covid COVID-19 coronavirus
     # The API key for the news api.
     # Get one here: https://newsapi.org/
     api_key: SAMPLE
+logging:
+    # The logging level, representing how much about execution is logged.
+
+    # If set to "debug", logging will include debugging information.
+    # If set to "info", logging will include runtime information.
+    # If set to "warning", logging will include warning information.
+    # If set to "error", logging will include only error information.
+
+    # DEFAULT:
+    #level: warning
+    level: warning
+    # The name of the log file.
+
+    # DEFAULT:
+    #filename: sys.log
+    filename: sys.log

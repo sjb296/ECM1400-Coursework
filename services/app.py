@@ -13,6 +13,8 @@ import covid_data_handler as cdh
 import covid_news_handling as cnh
 # !Load the config file!
 from load_config import CFG
+# Load the logger
+from load_logger import logging
 
 # List of update structures to render to the UI.
 #An update entry looks like this:
@@ -39,8 +41,6 @@ global data
 data = []
 # List of news article structures as returned by newsapi.
 global news
-news = []
-
 news = []
 
 app = Flask(__name__,
@@ -187,8 +187,8 @@ def load_updates_from_file() -> None:
 	tmp = updates
 	updates = []
 	[updates.append(i) for i in tmp if i not in updates]
-	#print(updates_csv)
-	#print(updates)
+	logging.debug(f"updates_csv at the time of load_updates_from_file: {updates_csv}")
+	logging.debug(f"updates at the time of load_updates_from_file: {updates}")
 
 def add_update(update: Dict) -> None:
 	"""Adds an update to the updates file from an update dictionary.
@@ -212,13 +212,11 @@ def add_update(update: Dict) -> None:
 	with open("updates.csv", "r") as f:
 		update_rows = f.readlines()
 		update_csv = [i.split("¬") for i in update_rows]
-		#print(update_rows)
 	with open("updates.csv", "a+") as f:
 		line = f"{update['time']}¬{update['title']}¬" + \
 			   f"{update['repeat']}¬{update['data']}¬{update['news']}\n"
-		#print([i[1] for i in update_csv])
 		if update["title"] not in [i[1] for i in update_csv]:
-			#print(f"{update['title']} -- {[i[1] for i in update_csv]}")
+			logging.debug(f"{update['title']} -- {[i[1] for i in update_csv]}")
 			f.write(line)
 			return True
 		else:
@@ -463,7 +461,7 @@ def execute_data_update(event_is_single: bool = False,
 	global data
 	data = cdh.covid_API_request()
 
-	print("----\nDATA\n----")
+	logging.info("Executing data update")
 
 def execute_news_update(event_is_single: bool = False,
 						single_update_name: str = "") -> None:
@@ -481,7 +479,7 @@ def execute_news_update(event_is_single: bool = False,
 		ex_news = [i[:-1] for i in f.readlines()]
 		news["articles"] = [i for i in news["articles"] if i["title"] not in ex_news]
 
-	print("----\nNEWS\n----")
+	logging.info("Executing news update")
 
 @app.route("/")
 @app.route("/index")
@@ -520,7 +518,7 @@ def serve_index() -> "Response":
 		is_new_update = True
 
 	if is_new_update:
-		#print("NEW UPDATE")
+		logging.info("NEW UPDATE")
 		is_new_update = True
 		new_update = dict()
 		new_update["time"]  = request.args.get("update")
@@ -563,11 +561,11 @@ def serve_index() -> "Response":
 		updates = [i for i in updates if i["title"] != update_to_remove]
 		setup_event_queue()
 
-	#print(updates)
-	#print(len(repeat_events.queue))
-	print(repeat_events.run(blocking=False))
-	#print(len(single_events.queue))
-	print(single_events.run(blocking=False))
+	logging.debug(f"updates at the time of serve_index: {updates}")
+	logging.info(f"Repeat events in queue: {len(repeat_events.queue)}")
+	repeat_events.run(blocking=False)
+	logging.info(f"Single events in queue: {len(single_events.queue)}")
+	single_events.run(blocking=False)
 
 	# TODO Log it as a warning if there's no scheduled data/news updates
 
