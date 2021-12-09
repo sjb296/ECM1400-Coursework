@@ -8,6 +8,7 @@ main-old.py
 services/nation_2021-10-28_TEST.csv
 services/updates.csv
 services/excluded_news.txt
+services/sys.log
 .gitignore
 CA-mark-scheme.pdf
 updates.csv
