@@ -40,8 +40,11 @@ def news_API_request(covid_terms: str = CFG["news"]["covid_terms"]) -> Dict:
 		return {"articles": [
 			{
 				"title": Markup("<span style='color:red;font-size:32pt'>"
-								+ "Error: No connection!</span>"),
-			 	"content": ""
+								+ "Error in news API request!</span>"),
+			 	"content": Markup("<span style='color:red'>"
+								  + "Please check your Internet connection, and "
+								  + "your API key."
+								  + "</span>")
 			}
 		]}
 

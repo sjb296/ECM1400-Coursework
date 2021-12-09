@@ -26,6 +26,14 @@ def parse_csv_data(csv_filename: str) -> List[str]:
 	with open(csv_filename, "r") as csv:
 		return [i.strip("\n") for i in csv.readlines()]
 
+def schedule_covid_updates(update_name: str,
+						   update_interval: float) -> None:
+	"""Dummy function for the spec's automated tests.
+	This program has ended up such that this function in app.py
+	can't be tested with pytest.
+	"""
+	pass
+
 def process_covid_csv_data(covid_csv_data: List[str]) -> Tuple[int]:
 	"""Return the total COVID cases in the last 7 days, the current number of
 	hospital cases, and the total deaths, given a list of rows of a csv
@@ -86,13 +94,6 @@ def process_covid_csv_data(covid_csv_data: List[str]) -> Tuple[int]:
 
 	return local_7day_infections, current_hospital_cases, deaths_total
 
-def schedule_covid_updates(update_interval: float,
-						   update_name: str) -> None:
-	"""Dummy function for the automated tests. The real function
-	is in app.py.
-	"""
-	pass
-
 def covid_API_request(location: str = CFG["data"]["local_loc"], \
 					  location_type: str = CFG["data"]["local_loc_type"]) -> Dict:
 	"""
@@ -150,12 +151,15 @@ def covid_API_request(location: str = CFG["data"]["local_loc"], \
 		# TODO: Handle SSLError - Connection related! LOG IT
 		logging.error(e)
 		return {
-			"location": CFG["data"]["local_loc"],
-			"local_7day_infections": 0,
+			"location": Markup(
+				"<span style='color:red'>Error in COVID API request! </span>" +
+				"<span style='color:red'>Please check your Internet connection.</span>"
+			),
+			"local_7day_infections": "???",
 			"nation_location": CFG["data"]["nat_loc"],
-			"national_7day_infections": 0,
-			"hospital_cases": 0,
-			"deaths_total": 0
+			"national_7day_infections": "???",
+			"hospital_cases": "???",
+			"deaths_total": "???"
 		}
 
 	if local_csv_data:
