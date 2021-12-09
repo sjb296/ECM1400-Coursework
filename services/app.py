@@ -567,13 +567,17 @@ def serve_index() -> "Response":
 		updates = [i for i in updates if i["title"] != update_to_remove]
 		setup_event_queue()
 
+	if len(repeat_events.queue) == 0:
+		logging.warning("No repeat events scheduled!")
+	if len(single_events.queue) == 0:
+		logging.warning("No single events scheduled!")
+
 	logging.debug(f"updates at the time of serve_index: {updates}")
 	logging.info(f"Repeat events in queue: {len(repeat_events.queue)}")
 	repeat_events.run(blocking=False)
 	logging.info(f"Single events in queue: {len(single_events.queue)}")
 	single_events.run(blocking=False)
 
-	# TODO Log it as a warning if there's no scheduled data/news updates
 
 	# Handle a news article removal request if there is one
 	article_to_remove = request.args.get("notif")
