@@ -18,6 +18,8 @@ to start the server.
 
 Then, in your browser, navigate to 127.0.0.1:5000 to run the frontend and view the dashboard.
 
+Then, put your newsapi API key into the appropriate field in config.yml.
+
 ## Usage
 
 ### Startup and during runtime
