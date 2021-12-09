@@ -26,7 +26,7 @@ The left-hand widget titled "Scheduled updates" displays the stored scheduled up
 
 The central element displays various COVID data, provided by the UK's COVID API. To schedule a new update, use the form in the centre of the UI. The time field represents the number of hours and minutes between the firings of the particular update. E.g. 12:15 means "every 12 hours and 15 minutes" if the event is repeating, and "In 12 hours and 15 minutes" if it is not.
 
-The file services/updates.csv is NOT to be modified by anything but the app itself! Modification of this file may lead to undefined and undesired behaviour.
+The file services/updates.csv is NOT to be modified by anything but the app itself! Modification of this file may lead to undefined and undesired behaviour. The same goes for services/excluded\_news.txt.
 
 ### Configuration
 
